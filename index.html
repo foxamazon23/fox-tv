@@ -50,6 +50,13 @@ aside{display:flex;flex-direction:column;min-height:0;border-right:1px solid var
 .chip:hover{color:var(--text);border-color:var(--border-hi)}
 .chip.on{background:var(--accent);border-color:var(--accent);color:#000}
 .count{padding:8px 16px 4px;font-size:12px;color:var(--muted-2);letter-spacing:1px;text-transform:uppercase}
+.setrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid var(--border);font-size:12px;color:var(--muted)}
+.setrow span{margin:0 2px 0 6px;text-transform:uppercase;letter-spacing:1px;font-size:11px}
+.setrow button{padding:5px 10px;border-radius:8px;border:1px solid var(--border);color:var(--muted);font-size:12px;font-weight:600}
+.setrow button.on{background:var(--accent);border-color:var(--accent);color:#000}
+.scrollbtn{display:none;align-items:center;justify-content:center;height:40px;margin:2px 14px;border-radius:10px;border:1px solid var(--border);color:var(--muted);font-size:20px;background:rgba(255,255,255,.03);flex-shrink:0}
+.scrollbtn:hover{color:var(--text);border-color:var(--accent);background:rgba(255,106,0,.12)}
+.scrollbtn.off{opacity:.25;pointer-events:none}
 .list{flex:1;overflow-y:auto;padding:4px 8px 16px;overscroll-behavior:contain}
 .row{display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:10px;border:1px solid transparent;cursor:pointer;outline:none;user-select:none}
 .row:hover{background:var(--panel-2)}
@@ -159,7 +166,11 @@ body.tv .tvtitle b{font-size:28px;font-weight:800;letter-spacing:2px;color:var(-
 body.tv .tvtitle small{display:block;font-size:12px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
 body.tv .chips{flex-wrap:wrap;padding:10px 18px;border-bottom:1px solid var(--border)}
 body.tv .count{padding:10px 24px 4px}
-body.tv .list{overflow-y:auto;padding:6px 14px 20px;scrollbar-width:none}
+body.tv .list{overflow-y:auto;min-height:0;padding:6px 14px 6px;scrollbar-width:none}
+body.tv .scrollbtn{display:flex;height:48px;font-size:24px}
+body.tv .setrow{padding:10px 18px;font-size:16px;gap:8px}
+body.tv .setrow span{font-size:13px}
+body.tv .setrow button{padding:8px 14px;font-size:16px}
 body.tv .list::-webkit-scrollbar{display:none}
 body.tv .row{padding:14px 16px;border-width:2px}
 body.tv .row.kfocus{transform:scale(1.02);box-shadow:0 0 0 2px var(--accent),0 0 22px var(--glow)}
@@ -220,9 +231,12 @@ body.tv.ui-hidden .bar{opacity:0;pointer-events:none}
  <aside>
   <div class="tvtitle" style="display:none" id="tvtitle"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 8 L20 22 L28 18 Z" fill="url(#fg2)"/><path d="M50 8 L44 22 L36 18 Z" fill="url(#fg2)"/><path d="M32 14 C20 14 12 22 12 34 C12 44 20 52 32 54 C44 52 52 44 52 34 C52 22 44 14 32 14 Z" fill="url(#fg2)"/><path d="M32 30 C26 30 22 36 22 42 C22 48 26 52 32 53 C38 52 42 48 42 42 C42 36 38 30 32 30 Z" fill="#fff"/><ellipse cx="24" cy="32" rx="2.5" ry="3.5"/><ellipse cx="40" cy="32" rx="2.5" ry="3.5"/><path d="M29 40 L35 40 L32 44 Z"/></svg><div><b>FOX TV</b><small>by Mihai Vulpe</small></div></div>
   <div class="chips" id="chips"></div>
+  <div class="setrow" id="setrow"></div>
   <div class="count" id="count"></div>
+  <button class="scrollbtn" id="scrUp" aria-label="Derulează în sus">▲</button>
   <div class="list" id="list" role="listbox" aria-label="Canale"></div>
-  <div class="tvhint" style="display:none" id="tvhint"><b>▲▼</b>canal &nbsp; <b>◀▶</b>categorie &nbsp; <b>OK</b>redă &nbsp; <b>CH</b>+/− &nbsp; <b>1</b>player &nbsp; <b>2</b>calitate &nbsp; <b>0</b>info</div>
+  <button class="scrollbtn" id="scrDown" aria-label="Derulează în jos">▼</button>
+  <div class="tvhint" style="display:none" id="tvhint"><b>▲▼</b>canal &nbsp; <b>◀▶</b>categorie &nbsp; <b>OK</b>redă &nbsp; <b>CH</b>+/− &nbsp; <b>1</b>player &nbsp; <b>2</b>calitate &nbsp; <b>0</b>info &nbsp; <b>▲▼</b>butoanele derulează lista</div>
  </aside>
 </main>
 </div>
@@ -333,7 +347,7 @@ const CHANNELS=[
 {"n":"TRT World","c":"Internațional","u":"https://tv-trtworld.live.trt.com.tr/master.m3u8","q":"1080p","tv":1}
 ];
 
-const VER='v5';
+const VER='v6';
 const IS_TV_APP = typeof tizen !== 'undefined';
 const IS_TV = IS_TV_APP || /Tizen|SMART-TV|SmartTV|Web0S|NetCast|HbbTV/i.test(navigator.userAgent);
 const NATIVE_HLS = !!document.createElement('video').canPlayType('application/vnd.apple.mpegurl');
@@ -346,11 +360,20 @@ let cat='Toate', query='', view=[], cur=null, hls=null, tries=0, kidx=0, osdT=nu
 let wd=null, autoStage=0, forceMode=null, usedMode='', lastHlsErr='', toastT=null, uiT=null, pendingUnmute=false;
 const store = {get(k,d){try{const s=localStorage.getItem(k);return s?JSON.parse(s):d}catch(e){return d}}, set(k,x){try{localStorage.setItem(k,JSON.stringify(x))}catch(e){}}};
 let favs = store.get('foxtv_favs2',[]), recent = store.get('foxtv_recent2',[]);
-let mode = store.get('foxtv_mode',null), lowQ = store.get('foxtv_lowq',false);
+let mode = store.get('foxtv_mode6', IS_TV ? 'nativ' : 'hls'), lowQ = store.get('foxtv_lowq',false);
+const MODES=[['nativ','TV (nativ)'],['hls','hls.js'],['auto','Auto']];
 const esc = s => s.replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 const initials = n => n.split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
 const qb = q => { q=(q||'').toUpperCase(); if(/1080|FHD/.test(q)) return '<span class="badge fhd">FHD</span>'; if(/720|1280|HD/.test(q)) return '<span class="badge hd">HD</span>'; return ''; };
 
+function renderSettings(){
+ $('setrow').innerHTML = '<span>Player</span>'+MODES.map(m=>`<button data-m="${m[0]}" class="${mode===m[0]?'on':''}">${m[1]}</button>`).join('')
+  +'<span>Calitate</span>'+`<button data-q="0" class="${!lowQ?'on':''}">Normală</button><button data-q="1" class="${lowQ?'on':''}">Mică</button>`;
+}
+function setMode(m){ mode=m; store.set('foxtv_mode6',m); renderSettings(); toast('Player: '+(MODES.find(x=>x[0]===m)||['','?'])[1]); if(cur) play(cur); }
+function setLowQ(q){ lowQ=!!q; store.set('foxtv_lowq',lowQ); renderSettings(); toast('Calitate: '+(lowQ?'mică':'normală')); if(cur) play(cur); }
+function scrollList(dir){ const L=listEl; L.scrollBy({top:dir*Math.max(120,L.clientHeight-100),behavior:'smooth'}); }
+function updateScrollBtns(){ const L=listEl; $('scrUp').classList.toggle('off',L.scrollTop<=2); $('scrDown').classList.toggle('off',L.scrollTop+L.clientHeight>=L.scrollHeight-2); }
 function renderChips(){
  $('chips').innerHTML = CATS.map((c,i)=>`<button class="chip${c===cat?' on':''}" data-i="${i}">${c}</button>`).join('');
 }
@@ -371,7 +394,8 @@ function renderList(){
 <div class="logo">${logo}</div><div class="meta"><div class="name">${esc(c.n)}</div><div class="sub">${c.c} · ${esc(c.q)}</div></div>${qb(c.q)}
 <button class="star${fav?' on':''}" data-star="${i}" aria-label="${fav?'Scoate din favorite':'Adaugă la favorite'}">${fav?'★':'☆'}</button></div>`;
  }).join('');
- if(IS_TV){ const r=listEl.children[kidx]; if(r) r.scrollIntoView({block:'nearest'}); }
+ if(IS_TV){ const r=listEl.children[kidx]; if(r && r.scrollIntoView) r.scrollIntoView({block:'nearest'}); }
+ setTimeout(updateScrollBtns,50);
 }
 function status(cls,t){ $('dot').className='dot '+cls; }
 function osd(c){ $('osdN').textContent=c.n; $('osdM').textContent=`${c.c} · ${c.q}`; $('osd').classList.add('show'); clearTimeout(osdT); osdT=setTimeout(()=>$('osd').classList.remove('show'),3500); }
@@ -396,7 +420,7 @@ function updateDbg(){
   'UA: '+navigator.userAgent.slice(0,110),
   'TV='+IS_TV+' app='+IS_TV_APP+' nativeHLS='+NATIVE_HLS+' hls.js='+!!(window.Hls&&Hls.isSupported())+' MSE='+!!window.MediaSource,
   'codec h264 base='+mse('video/mp4;codecs="avc1.42E01E"')+' high='+mse('video/mp4;codecs="avc1.64001F"')+' hevc='+mse('video/mp4;codecs="hvc1.1.6.L93.B0"')+' aac='+mse('audio/mp4;codecs="mp4a.40.2"'),
-  'player: '+usedMode+'  (setare: '+(mode||'auto')+(lowQ?', calitate mică':'')+')  auto-switch='+autoStage,
+  'player: '+usedMode+'  (setare: '+mode+(lowQ?', calitate mică':'')+')  auto-switch='+autoStage,
   'canal: '+(cur?cur.n:'-')+'  video '+v.videoWidth+'x'+v.videoHeight+'  cutie '+v.clientWidth+'x'+v.clientHeight+'  t='+v.currentTime.toFixed(1)+' paused='+v.paused+' ready='+v.readyState+' net='+v.networkState+' err='+(v.error?v.error.code+' '+(v.error.message||''):'-'),
   'audio: muted='+v.muted+' vol='+v.volume+' audioBytes='+(typeof v.webkitAudioDecodedByteCount==='number'?v.webkitAudioDecodedByteCount:'n/a')+' videoBytes='+(typeof v.webkitVideoDecodedByteCount==='number'?v.webkitVideoDecodedByteCount:'n/a'),
   'hls: '+lastHlsErr+'\n   '+lv
@@ -407,6 +431,7 @@ function noMedia(c,kind){
  const what = kind==='audio' ? 'Se vede dar nu se aude' : 'Se aude dar nu se vede';
  const other = usedMode==='nativ'?'hls':'nativ';
  const canOther = other==='nativ' ? NATIVE_HLS : !!(window.Hls && Hls.isSupported());
+ if(mode!=='auto'){ autoStage=3; toast(what+'. Încearcă alt player din panou (sau tasta 1).',7000); return; }
  if(autoStage===0 && canOther){ autoStage=1; forceMode=other; toast(what+' → încerc alt player ('+other+')…',5000); play(c,true); }
  else if(autoStage<=1 && usedMode==='hls' && !lowQ && kind!=='audio'){ autoStage=2; lowQ=true; toast('Tot fără imagine → încerc calitatea cea mai mică…',5000); play(c,true); }
  else { autoStage=3; toast(kind==='audio'?'Televizorul nu poate decoda sunetul acestui canal (probabil audio MP3).':'Televizorul redă doar sunetul la acest canal.',8000); }
@@ -420,7 +445,7 @@ function watchdog(c){
    const ab=v.webkitAudioDecodedByteCount;
    if(typeof ab==='number' && ab===0 && !v.muted && v.currentTime>5){ if(++badA>=3){ clearInterval(wd); wd=null; noMedia(c,'audio'); } return; }
    badA=0;
-   if(autoStage>0 && autoStage<3){ store.set('foxtv_mode',usedMode); store.set('foxtv_lowq',lowQ); mode=usedMode; clearInterval(wd); wd=null; }
+   if(autoStage>0 && autoStage<3){ clearInterval(wd); wd=null; }
   } },1500);
 }
 function fail(){
@@ -442,7 +467,7 @@ function play(c, keepTries){
  renderList();
  const ok=()=>{ $('spin').classList.remove('show'); status('live'); tries=0; showUi(); };
  const hlsOk = !!(window.Hls && Hls.isSupported());
- const want = forceMode || mode;
+ const want = forceMode || (mode==='auto' ? null : mode);
  let useNative = want==='nativ' ? NATIVE_HLS : want==='hls' ? !hlsOk : (NATIVE_HLS && (IS_TV || !hlsOk));
  if(useNative && !NATIVE_HLS) useNative=false;
  usedMode = useNative ? 'nativ' : (hlsOk ? 'hls' : 'niciunul');
@@ -450,7 +475,7 @@ function play(c, keepTries){
  if(useNative){
   v.src=c.u;
   v.addEventListener('playing',ok,{once:true});
-  v.onerror=()=>{ if(cur!==c) return; lastHlsErr='nativ err '+(v.error?v.error.code:'?'); if(hlsOk && !c.tv && tries<1){ tries++; stop(); usedMode='hls'; playHls(c,ok); watchdog(c); } else fail(); };
+  v.onerror=()=>{ if(cur!==c) return; lastHlsErr='nativ err '+(v.error?v.error.code:'?'); if(mode==='auto' && hlsOk && !c.tv && tries<1){ tries++; stop(); usedMode='hls'; playHls(c,ok); watchdog(c); } else fail(); };
   tryPlay();
  } else if(window.Hls && Hls.isSupported()){ playHls(c,ok); }
  else { fail(); $('errP').textContent='Dispozitivul nu suportă redarea HLS.'; }
@@ -463,7 +488,7 @@ function playHls(c,ok){
   hls.loadSource(c.u); hls.attachMedia(v);
   hls.on(Hls.Events.MANIFEST_PARSED,(e,d)=>{
    const ac=((d&&d.levels)||[]).map(l=>l.audioCodec||'').join(',');
-   if(IS_TV && NATIVE_HLS && !forceMode && /mp4a\.40\.34|mp3|ac-3|ec-3/i.test(ac) && mse('audio/mp4;codecs="mp4a.40.34"')!=='da'){ forceMode='nativ'; autoStage=1; toast('Audio '+ac+' → player nativ',4000); setTimeout(()=>{ if(cur===c) play(c,true); },0); return; }
+   if(mode==='auto' && IS_TV && NATIVE_HLS && !forceMode && /mp4a\.40\.34|mp3|ac-3|ec-3/i.test(ac) && mse('audio/mp4;codecs="mp4a.40.34"')!=='da'){ forceMode='nativ'; autoStage=1; toast('Audio '+ac+' → player nativ',4000); setTimeout(()=>{ if(cur===c) play(c,true); },0); return; }
    tryPlay(); });
   hls.on(Hls.Events.FRAG_BUFFERED,ok);
   hls.on(Hls.Events.ERROR,(e,d)=>{ lastHlsErr=(d.fatal?'FATAL ':'')+d.type+'/'+d.details; if(!d.fatal||cur!==c) return;
@@ -486,6 +511,15 @@ listEl.addEventListener('keydown',e=>{ const r=e.target.closest('.row'); if(!r) 
  if(e.key==='ArrowDown'||e.key==='ArrowUp'){ e.preventDefault(); const n=e.key==='ArrowDown'?r.nextElementSibling:r.previousElementSibling; if(n) n.focus(); }
 });
 $('q').addEventListener('input',e=>{ query=e.target.value; filter(); });
+$('setrow').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; if(b.dataset.m) setMode(b.dataset.m); else if(b.dataset.q!==undefined) setLowQ(+b.dataset.q); });
+let scrT=null;
+[['scrUp',-1],['scrDown',1]].forEach(([id,d])=>{ const b=$(id);
+ b.addEventListener('click',()=>scrollList(d));
+ b.addEventListener('mouseenter',()=>{ clearInterval(scrT); scrT=setInterval(()=>{ listEl.scrollTop+=d*6; updateScrollBtns(); },16); });
+ b.addEventListener('mouseleave',()=>{ clearInterval(scrT); scrT=null; });
+});
+listEl.addEventListener('scroll',updateScrollBtns);
+listEl.addEventListener('mouseover',e=>{ const r=e.target.closest('.row'); if(r && IS_TV){ kidx=+r.dataset.i; [...listEl.children].forEach((x,i)=>x.classList.toggle('kfocus',i===kidx)); } });
 $('retry').onclick=()=>play(cur); $('skip').onclick=()=>step(1);
 $('prev').onclick=()=>step(-1); $('next').onclick=()=>step(1);
 $('fill').onclick=()=>{ v.classList.toggle('fill'); $('fill').classList.toggle('on'); };
@@ -501,8 +535,8 @@ document.addEventListener('keydown',e=>{
  if(k===427||k===33){ e.preventDefault(); step(-1); return; }      // CH- / PageUp
  if(k===428||k===34){ e.preventDefault(); step(1); return; }       // CH+ / PageDown
  if(!typing && (k===48||k===96)){ e.preventDefault(); $('dbg').classList.toggle('show'); updateDbg(); return; }           // 0 = diagnostic
- if(!typing && (k===49||k===97)){ e.preventDefault(); mode = mode===null?'nativ':mode==='nativ'?'hls':null; store.set('foxtv_mode',mode); toast('Player: '+(mode||'auto')); if(cur) play(cur); return; }  // 1 = player
- if(!typing && (k===50||k===98)){ e.preventDefault(); lowQ=!lowQ; store.set('foxtv_lowq',lowQ); toast('Calitate mică: '+(lowQ?'DA':'NU')); if(cur) play(cur); return; }   // 2 = calitate
+ if(!typing && (k===49||k===97)){ e.preventDefault(); const i=MODES.findIndex(m=>m[0]===mode); setMode(MODES[(i+1)%MODES.length][0]); return; }  // 1 = player
+ if(!typing && (k===50||k===98)){ e.preventDefault(); setLowQ(!lowQ); return; }   // 2 = calitate
  if(!IS_TV) return;
  if(wasHidden && (k===38||k===40||k===13||k===37||k===39)){ e.preventDefault(); return; }
  if($('err').classList.contains('show') && k===13){ e.preventDefault(); play(cur); return; }
@@ -532,7 +566,7 @@ addEventListener('appinstalled',()=>$('install').classList.remove('show'));
 if('serviceWorker' in navigator && location.protocol==='https:') navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 // init
-renderChips(); filter();
+renderSettings(); renderChips(); filter();
 if(/debug/.test(location.search)){ $('dbg').classList.add('show'); updateDbg(); }
 const last=ALL.find(c=>c.n===store.get('foxtv_last2',''));
 if(last){
