@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, height=1080, initial-scale=1.0">
+<title>FOX TV — by Mihai Vulpe</title>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js"></script>
+<style>
+:root {
+--bg:#000;--panel:#0a0a0a;--panel-2:#141414;--panel-3:#1c1c1c;
+--border:#262626;--border-hi:#3a3a3a;
+--text:#f5f5f5;--muted:#8a8a8a;--muted-2:#5a5a5a;
+--accent:#ff6a00;--accent-2:#ff8c2a;--accent-glow:rgba(255,106,0,0.4);
+--ok:#3fb950;--err:#f85149;--gold:#ffd23f;
+--focus-ring:0 0 0 4px var(--accent),0 0 24px var(--accent-glow);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:1920px;height:1080px;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;cursor:none;user-select:none;-webkit-user-select:none;}
+/* HEADER */
+header{display:flex;align-items:center;gap:24px;padding:18px 40px;background:linear-gradient(180deg,#0d0d0d,#000);border-bottom:2px solid var(--border);height:100px;flex-shrink:0;}
+.logo-wrap{display:flex;align-items:center;gap:18px;}
+.fox-logo{width:60px;height:60px;filter:drop-shadow(0 0 12px var(--accent-glow));}
+.brand{display:flex;flex-direction:column;line-height:1.1;}
+.brand .name{font-size:34px;font-weight:800;letter-spacing:3px;background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.brand .by{font-size:15px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+.search-wrap{position:relative;flex:1;max-width:500px;}
+.search-wrap input{width:100%;padding:14px 20px 14px 50px;border-radius:12px;border:2px solid var(--border);background:var(--panel-2);color:var(--text);font-size:20px;outline:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%238a8a8a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.3-4.3'/></svg>");background-repeat:no-repeat;background-position:16px center;}
+.search-wrap input.focused{border-color:var(--accent);box-shadow:var(--focus-ring);}
+.search-wrap input::placeholder{color:var(--muted-2);}
+header .count{font-size:18px;color:var(--muted);background:var(--panel-2);padding:10px 20px;border-radius:16px;border:2px solid var(--border);white-space:nowrap;}
+.header-tools{display:flex;gap:8px;}
+.tool-btn{padding:10px 16px;background:var(--panel-2);border:2px solid var(--border);color:var(--muted);border-radius:8px;font-size:16px;font-weight:600;outline:none;}
+.tool-btn.focused{color:var(--text);border-color:var(--accent);box-shadow:var(--focus-ring);}
+.tool-btn.active{color:var(--accent);border-color:var(--accent);background:rgba(255,106,0,0.1);}
+.clock{font-size:20px;color:var(--muted);font-weight:600;min-width:140px;text-align:right;letter-spacing:1px;}
+.network-status{position:absolute;top:0;left:0;right:0;background:var(--err);color:#fff;text-align:center;padding:8px;font-weight:700;font-size:16px;z-index:100;display:none;letter-spacing:1px;}
+.network-status.show{display:block;}
+/* MAIN */
+main{flex:1;display:grid;grid-template-columns:560px 1fr;min-height:0;}
+/* SIDEBAR */
+aside{background:var(--panel);border-right:2px solid var(--border);display:flex;flex-direction:column;min-height:0;}
+.cat-tabs{display:flex;flex-wrap:wrap;gap:8px;padding:16px;border-bottom:2px solid var(--border);background:var(--panel-2);max-height:140px;overflow-y:auto;}
+.cat-tab{padding:10px 18px;font-size:17px;border-radius:16px;background:transparent;color:var(--muted);border:2px solid var(--border);font-weight:600;outline:none;}
+.cat-tab.focused{color:var(--text);border-color:var(--accent);box-shadow:var(--focus-ring);}
+.cat-tab.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:700;box-shadow:0 0 16px var(--accent-glow);}
+.quality-filter{display:flex;gap:6px;padding:12px 16px;border-bottom:2px solid var(--border);background:var(--panel);}
+.q-btn{padding:8px 14px;font-size:15px;border-radius:12px;background:transparent;color:var(--muted-2);border:2px solid var(--border);font-weight:700;letter-spacing:.5px;outline:none;}
+.q-btn.focused{color:var(--text);border-color:var(--gold);box-shadow:var(--focus-ring);}
+.q-btn.active{color:var(--gold);border-color:var(--gold);background:rgba(255,210,63,0.08);}
+.channel-list{flex:1;overflow:hidden;position:relative;padding:10px;}
+.channel-list-inner{position:absolute;top:10px;left:10px;right:10px;transition:transform .25s ease-out;}
+.channel{display:flex;align-items:center;gap:18px;padding:14px 18px;border-radius:12px;border:2px solid transparent;margin-bottom:6px;outline:none;height:88px;position:relative;}
+.channel.focused{background:var(--panel-2);border-color:var(--border-hi);box-shadow:var(--focus-ring);transform:scale(1.02);}
+.channel.active{background:linear-gradient(90deg,rgba(255,106,0,0.18),rgba(255,106,0,0.05));border-color:var(--accent);box-shadow:inset 6px 0 0 var(--accent);}
+.channel.active.focused{box-shadow:var(--focus-ring),inset 6px 0 0 var(--accent);}
+.channel .logo{width:56px;height:56px;border-radius:10px;background:var(--panel-3);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:var(--accent);flex-shrink:0;border:2px solid var(--border);overflow:hidden;}
+.channel .logo img{width:100%;height:100%;object-fit:contain;}
+.channel.active .logo{background:var(--accent);color:#000;border-color:var(--accent);}
+.channel .meta{flex:1;min-width:0;}
+.channel .name{font-size:22px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.channel .sub{font-size:16px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.channel .epg-now{font-size:14px;color:var(--accent-2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.channel .badges{display:flex;gap:4px;flex-shrink:0;}
+.badge{font-size:13px;padding:4px 8px;border-radius:4px;font-weight:700;letter-spacing:.3px;border:2px solid var(--border);}
+.badge.hd{background:rgba(255,106,0,0.15);color:var(--accent);border-color:rgba(255,106,0,0.4);}
+.badge.fhd{background:rgba(63,185,80,0.15);color:var(--ok);border-color:rgba(63,185,80,0.4);}
+.badge.uhd{background:rgba(255,210,63,0.18);color:var(--gold);border-color:rgba(255,210,63,0.5);}
+.fav-star{position:absolute;top:8px;right:12px;font-size:20px;color:var(--muted-2);}
+.fav-star.on{color:var(--gold);}
+.empty{padding:60px 24px;text-align:center;color:var(--muted);font-size:20px;}
+/* PLAYER */
+section.player-area{display:flex;flex-direction:column;min-width:0;background:#000;position:relative;}
+.video-wrap{flex:1;position:relative;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#0a0a0a,#000 70%);min-height:0;overflow:hidden;}
+video{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;background:#000;display:none;transition:opacity .3s ease;}
+video.fill{object-fit:cover;}
+video.fade-out{opacity:0;}
+video.fade-in{opacity:1;}
+.placeholder{text-align:center;color:var(--muted);padding:40px;max-width:720px;}
+.placeholder .fox-big{width:180px;height:180px;margin:0 auto 36px;opacity:.55;filter:drop-shadow(0 0 30px var(--accent-glow));animation:float 4s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.placeholder h2{font-size:38px;margin-bottom:18px;color:var(--text);font-weight:700;}
+.placeholder h2 span{color:var(--accent);}
+.placeholder p{font-size:22px;line-height:1.6;}
+.placeholder .hint{margin-top:32px;font-size:18px;color:var(--muted-2);letter-spacing:1.5px;text-transform:uppercase;}
+.placeholder .hint kbd{display:inline-block;padding:6px 14px;background:var(--panel-3);border:2px solid var(--border-hi);border-radius:6px;color:var(--accent);font-family:inherit;font-size:16px;margin:0 4px;font-weight:700;}
+.ch-overlay{position:absolute;top:24px;left:24px;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);border:2px solid var(--border);border-left:6px solid var(--accent);padding:18px 28px;border-radius:12px;display:none;z-index:8;min-width:320px;}
+.ch-overlay.show{display:block;animation:slideIn .3s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+.ch-overlay .ch-title{font-size:28px;font-weight:700;color:var(--accent);}
+.ch-overlay .ch-meta{font-size:18px;color:var(--muted);margin-top:6px;}
+.ch-overlay .ch-epg{font-size:16px;color:var(--accent-2);margin-top:8px;}
+.vol-wrap{position:absolute;bottom:120px;right:24px;display:flex;align-items:center;gap:12px;background:rgba(0,0,0,0.75);padding:10px 18px;border-radius:24px;border:2px solid var(--border);z-index:8;opacity:0;transition:opacity .3s;}
+.vol-wrap.show{opacity:1;}
+.vol-wrap input[type=range]{width:140px;accent-color:var(--accent);}
+.vol-wrap span{font-size:16px;color:var(--muted);min-width:40px;}
+.status-bar{padding:18px 32px;background:var(--panel);border-top:2px solid var(--border);display:flex;align-items:center;gap:24px;font-size:20px;height:80px;flex-shrink:0;}
+.status-indicator{display:inline-flex;align-items:center;gap:10px;font-size:16px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--muted-2);}
+.dot.live{background:var(--ok);box-shadow:0 0 14px var(--ok);animation:pulse 1.5s infinite;}
+.dot.err{background:var(--err);box-shadow:0 0 12px var(--err);}
+.dot.loading{background:var(--accent);box-shadow:0 0 14px var(--accent);animation:pulse .8s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.now-playing{flex:1;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:22px;}
+.now-playing .ch-name{color:var(--accent);}
+.error-toast{position:absolute;bottom:120px;left:50%;transform:translateX(-50%);background:rgba(20,20,20,0.95);border:2px solid var(--err);color:var(--text);padding:20px 32px;border-radius:12px;font-size:20px;max-width:80%;text-align:center;display:none;z-index:10;box-shadow:0 4px 30px rgba(0,0,0,0.8);}
+.error-toast.show{display:block;}
+footer{padding:12px 40px;background:#000;border-top:2px solid var(--border);font-size:14px;color:var(--muted-2);text-align:center;letter-spacing:2px;text-transform:uppercase;height:50px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+footer span{color:var(--accent);font-weight:700;}
+/* MINI PLAYER / PIP */
+.mini-player{position:absolute;bottom:100px;right:24px;width:320px;height:180px;background:#000;border:2px solid var(--border);border-radius:12px;overflow:hidden;display:none;z-index:9;box-shadow:0 8px 32px rgba(0,0,0,0.8);}
+.mini-player.show{display:block;}
+.mini-player video{width:100%;height:100%;object-fit:contain;}
+.mini-player .mini-label{position:absolute;top:8px;left:12px;font-size:14px;font-weight:700;color:var(--accent);text-shadow:0 2px 4px rgba(0,0,0,0.9);}
+/* SLEEP TIMER OVERLAY */
+.sleep-timer-overlay{position:absolute;top:24px;right:24px;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);border:2px solid var(--border);padding:14px 24px;border-radius:12px;display:none;z-index:8;font-size:18px;color:var(--gold);font-weight:700;}
+.sleep-timer-overlay.show{display:block;}
+/* NUMPAD OVERLAY */
+.numpad-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.9);backdrop-filter:blur(12px);border:2px solid var(--accent);padding:32px 48px;border-radius:16px;display:none;z-index:20;text-align:center;}
+.numpad-overlay.show{display:block;}
+.numpad-overlay .num-display{font-size:64px;font-weight:800;color:var(--accent);letter-spacing:8px;min-width:200px;}
+.numpad-overlay .num-label{font-size:18px;color:var(--muted);margin-top:12px;text-transform:uppercase;letter-spacing:2px;}
+/* AUDIO/SUBTITLE MENU */
+.track-menu{position:absolute;bottom:120px;left:24px;background:rgba(0,0,0,0.9);backdrop-filter:blur(8px);border:2px solid var(--border);border-radius:12px;padding:16px;display:none;z-index:10;min-width:280px;}
+.track-menu.show{display:block;}
+.track-menu h3{font-size:18px;color:var(--accent);margin-bottom:12px;font-weight:700;}
+.track-item{padding:10px 16px;border-radius:8px;font-size:16px;color:var(--muted);cursor:pointer;margin-bottom:4px;border:2px solid transparent;}
+.track-item.focused{color:var(--text);border-color:var(--accent);background:rgba(255,106,0,0.1);}
+.track-item.active{color:var(--accent);font-weight:700;}
+/* LOADING SPINNER */
+.spinner{display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;}
+.spinner.show{display:block;}
+.spinner svg{width:80px;height:80px;animation:spin 1s linear infinite;}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+/* M3U IMPORT MODAL */
+.import-modal{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.95);z-index:50;display:none;align-items:center;justify-content:center;}
+.import-modal.show{display:flex;}
+.import-box{background:var(--panel-2);border:2px solid var(--border);border-radius:16px;padding:40px;max-width:600px;text-align:center;}
+.import-box h2{font-size:28px;color:var(--accent);margin-bottom:20px;}
+.import-box p{font-size:18px;color:var(--muted);margin-bottom:24px;line-height:1.6;}
+.import-box input[type=file]{display:none;}
+.import-box .file-btn{display:inline-block;padding:14px 32px;background:var(--accent);color:#000;font-weight:700;font-size:18px;border-radius:12px;cursor:pointer;}
+.import-box .cancel-btn{margin-top:16px;padding:10px 24px;background:transparent;border:2px solid var(--border);color:var(--muted);border-radius:8px;font-size:16px;cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="network-status" id="networkStatus">⚠ No network connection — streams may be unavailable</div>
+<header>
+<div class="logo-wrap">
+<svg class="fox-logo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff8c2a"/><stop offset="100%" stop-color="#ff6a00"/></linearGradient></defs>
+<path d="M14 8 L20 22 L28 18 Z" fill="url(#fg)"/><path d="M50 8 L44 22 L36 18 Z" fill="url(#fg)"/>
+<path d="M32 14 C20 14 12 22 12 34 C12 44 20 52 32 54 C44 52 52 44 52 34 C52 22 44 14 32 14 Z" fill="url(#fg)"/>
+<path d="M32 30 C26 30 22 36 22 42 C22 48 26 52 32 53 C38 52 42 48 42 42 C42 36 38 30 32 30 Z" fill="#fff"/>
+<ellipse cx="24" cy="32" rx="2.5" ry="3.5" fill="#000"/><ellipse cx="40" cy="32" rx="2.5" ry="3.5" fill="#000"/>
+<circle cx="24.8" cy="31" r=".8" fill="#fff"/><circle cx="40.8" cy="31" r=".8" fill="#fff"/>
+<path d="M29 40 L35 40 L32 44 Z" fill="#000"/>
+<path d="M17 12 L20 20 L24 18 Z" fill="#1a1a1a"/><path d="M47 12 L44 20 L40 18 Z" fill="#1a1a1a"/>
+</svg>
+<div class="brand"><div class="name">FOX TV</div><div class="by">by Mihai Vulpe</div></div>
+</div>
+<div class="search-wrap">
+<input type="search" id="search" placeholder="Search 200+ channels..." autocomplete="off">
+</div>
+<span class="count" id="count">0 channels</span>
+<div class="header-tools">
+<button class="tool-btn" id="favToggle">★ Favs</button>
+<button class="tool-btn" id="fillToggle">⛶ Fill</button>
+<button class="tool-btn" id="volBtn">🔊 Vol</button>
+<button class="tool-btn" id="infoBtn">ℹ Info</button>
+<button class="tool-btn" id="pipBtn">📺 PIP</button>
+<button class="tool-btn" id="sleepBtn">🌙 Sleep</button>
+<button class="tool-btn" id="audioBtn">🎵 Audio</button>
+<button class="tool-btn" id="importBtn">📂 Import</button>
+</div>
+<div class="clock" id="clock">00:00</div>
+</header>
+<main>
+<aside>
+<div class="cat-tabs" id="catTabs"></div>
+<div class="quality-filter" id="qualFilter">
+<button class="q-btn active" data-q="all">All</button>
+<button class="q-btn" data-q="4k">4K</button>
+<button class="q-btn" data-q="fhd">FHD</button>
+<button class="q-btn" data-q="hd">HD</button>
+<button class="q-btn" data-q="sd">SD</button>
+</div>
+<div class="channel-list" id="channelList">
+<div class="channel-list-inner" id="channelListInner"></div>
+</div>
+</aside>
+<section class="player-area">
+<div class="video-wrap" id="videoWrap">
+<video id="video" autoplay playsinline></video>
+<div class="spinner" id="spinner">
+<svg viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke="var(--accent)" stroke-width="4" stroke-dasharray="80 40" stroke-linecap="round"/></svg>
+</div>
+<div class="placeholder" id="placeholder">
+<svg class="fox-big" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="fgb" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff8c2a"/><stop offset="100%" stop-color="#ff6a00"/></linearGradient></defs>
+<path d="M14 8 L20 22 L28 18 Z" fill="url(#fgb)"/><path d="M50 8 L44 22 L36 18 Z" fill="url(#fgb)"/>
+<path d="M32 14 C20 14 12 22 12 34 C12 44 20 52 32 54 C44 52 52 44 52 34 C52 22 44 14 32 14 Z" fill="url(#fgb)"/>
+<path d="M32 30 C26 30 22 36 22 42 C22 48 26 52 32 53 C38 52 42 48 42 42 C42 36 38 30 32 30 Z" fill="#fff"/>
+<ellipse cx="24" cy="32" rx="2.5" ry="3.5" fill="#000"/><ellipse cx="40" cy="32" rx="2.5" ry="3.5" fill="#000"/>
+<circle cx="24.8" cy="31" r=".8" fill="#fff"/><circle cx="40.8" cy="31" r=".8" fill="#fff"/>
+<path d="M29 40 L35 40 L32 44 Z" fill="#000"/>
+<path d="M17 12 L20 20 L24 18 Z" fill="#1a1a1a"/><path d="M47 12 L44 20 L40 18 Z" fill="#1a1a1a"/>
+</svg>
+<h2>Welcome to <span>FOX TV</span></h2>
+<p>200+ Romanian & international channels. Use your remote to search, filter by quality, save favorites, and stream live.</p>
+<div class="hint">
+<kbd>▲</kbd><kbd>▼</kbd> navigate · <kbd>◀</kbd><kbd>▶</kbd> category · <kbd>OK</kbd> play · <kbd>CH</kbd> prev/next · <kbd>*</kbd> search · <kbd>#</kbd> favs · <kbd>0-9</kbd> direct channel
+</div>
+</div>
+<div class="ch-overlay" id="chOverlay">
+<div class="ch-title" id="ovTitle"></div>
+<div class="ch-meta" id="ovMeta"></div>
+<div class="ch-epg" id="ovEpg"></div>
+</div>
+<div class="vol-wrap" id="volWrap">
+<span>🔊</span>
+<input type="range" id="volSlider" min="0" max="100" value="80">
+<span id="volVal">80%</span>
+</div>
+<div class="error-toast" id="errorToast"></div>
+<div class="mini-player" id="miniPlayer">
+<video id="miniVideo" autoplay playsinline muted></video>
+<div class="mini-label" id="miniLabel">LIVE</div>
+</div>
+<div class="sleep-timer-overlay" id="sleepTimerOverlay">🌙 Sleep: --:--</div>
+<div class="numpad-overlay" id="numpadOverlay">
+<div class="num-display" id="numDisplay"></div>
+<div class="num-label">Enter channel number</div>
+</div>
+<div class="track-menu" id="trackMenu">
+<h3 id="trackMenuTitle">Audio Tracks</h3>
+<div id="trackMenuItems"></div>
+</div>
+</div>
+<div class="status-bar">
+<span class="status-indicator"><span class="dot" id="statusDot"></span><span id="statusText">Idle</span></span>
+<span class="now-playing" id="nowPlaying">No channel selected</span>
+</div>
+</section>
+</main>
+<footer>FOX TV · Curated by <span>Mihai Vulpe</span> · 200+ channels · Public free-to-air sources · Samsung Smart TV Edition</footer>
+<div class="import-modal" id="importModal">
+<div class="import-box">
+<h2>Import M3U Playlist</h2>
+<p>Load your own .m3u or .m3u8 playlist file from USB or network storage. Channels will be added to the "Imported" category.</p>
+<label class="file-btn" for="m3uFile">Choose File</label>
+<input type="file" id="m3uFile" accept=".m3u,.m3u8">
+<button class="cancel-btn" id="importCancel">Cancel</button>
+</div>
+</div>
+<script>
+// ============================================================
+// CHANNEL DATABASE — 200+ channels (same as web version)
+// ============================================================
+const CHANNELS = [
+// ===== ROMANIAN NEWS =====
+{name:"Digi 24",cat:"News",url:"https://edge-ar.rcs-rds.ro/digi24ar/index.m3u8",q:"720p",logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Digi24_logo.svg/320px-Digi24_logo.svg.png"},
+{name:"Digi 24 HD",cat:"News",url:"http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-digi24/live_fullhd?offsetSeconds=0",q:"1080i"},
+{name:"Antena 3 CNN 1080p",cat:"News",url:"https://live3vox.antenaplay.ro/a3free/a3free.m3u8",q:"1080p",logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Antena_3_CNN_logo.svg/320px-Antena_3_CNN_logo.svg.png"},
+{name:"Antena 3 CNN SD",cat:"News",url:"https://live4dai.antenaplay.ro/live2_aws4_sdi11/live2_aws4_sdi11_600k.m3u8",q:"576p"},
+{name:"Aleph News",cat:"News",url:"https://stream-aleph.m.ro/Aleph/ngrp:Alephnewsmain.stream_all/playlist.m3u8",q:"720p"},
+{name:"Aleph Business",cat:"News",url:"https://streamw.m.ro/Aleph/ngrp:Alephbiz.stream_all/playlist.m3u8",q:"1280p"},
+{name:"Realitatea Plus",cat:"News",url:"https://stream.realitatea.net/realitatea/plus_md/ts:playlist.m3u8",q:"720p"},
+{name:"Realitatea Sportiva",cat:"News",url:"https://stream.realitatea.net/realitatea/sportiva_md/ts:playlist.m3u8",q:"720p"},
+{name:"Realitatea Star",cat:"News",url:"https://stream.realitatea.net/realitatea/star_md/ts:playlist.m3u8",q:"576i"},
+{name:"Romania TV",cat:"News",url:"https://hls01ns.antenaplay.ro/hls/romania-tv-sd/index.m3u8",q:"576p"},
+{name:"National 24 Plus",cat:"News",url:"https://hls01ns.antenaplay.ro/hls/n24-plus-sd/index.m3u8",q:"SD"},
+{name:"Pro TV News",cat:"News",url:"https://cmero-ott-live.ssl.cdn.cra.cz/channels/cme-ro-voyo-news/playlist.m3u8?offsetSeconds=0&url=0",q:"1080p"},
+{name:"Prima News",cat:"News",url:"https://hls02ns.antenaplay.ro/hls/prima-news-hd/index.m3u8",q:"HD"},
+{name:"Observator News",cat:"News",url:"https://live77cdn2.antenaplay.ro/live_ObservatorNews/live_ObservatorNews.m3u8",q:"360p"},
+{name:"Euronews Romania",cat:"News",url:"https://hls02ns.antenaplay.ro/hls/euronews-ro-sd/index.m3u8",q:"576p"},
+{name:"Nasul TV",cat:"News",url:"https://live.nasul.tv/live/stream.m3u8",q:"720p"},
+{name:"Kapital TV",cat:"News",url:"https://1a-1791.com/live/qt9k24wa/live-hls/41w5-c26y/chunklist_i1_DVR.m3u8",q:"1080p"},
+{name:"PROFI 24 TV",cat:"News",url:"https://live.ro24tv.ro/hls/stream.m3u8",q:"HD"},
+{name:"A7TV",cat:"News",url:"https://a7tvlive.ro/A7TV/A7TV/playlist.m3u8",q:"1080p"},
+{name:"Informatia TV",cat:"News",url:"https://informatia.streamnet.ro/mobile_tv/informatiatv.m3u8",q:"SD"},
+// ===== ROMANIAN GENERAL =====
+{name:"Antena 1",cat:"General",url:"https://live4dai.antenaplay.ro/live2_sdi14/live2_sdi14_600k.m3u8",q:"SD",logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Antena_1_logo.svg/320px-Antena_1_logo.svg.png"},
+{name:"Antena Stars",cat:"General",url:"https://live4dai.antenaplay.ro/live2_sdi07/live2_sdi07_600k.m3u8",q:"SD"},
+{name:"Antena International",cat:"General",url:"https://live4dai.antenaplay.ro/live2_sdi06/live2_sdi06_600k.m3u8",q:"SD"},
+{name:"Happy Channel",cat:"General",url:"https://live4dai.antenaplay.ro/live2_aws4_sdi12/live2_aws4_sdi12_600k.m3u8",q:"SD"},
+{name:"PRO TV HD",cat:"General",url:"http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-protv/live_fullhd?offsetSeconds=0",q:"1080p",logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Pro_TV_logo.svg/320px-Pro_TV_logo.svg.png"},
+{name:"PRO TV International",cat:"General",url:"http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-protv-international/live_fullhd?offsetSeconds=0",q:"1080p"},
+{name:"Kanal D",cat:"General",url:"https://stream1.kanald.ro/iphone/knd-live.m3u8",q:"480p",logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Kanal_D_logo.svg/320px-Kanal_D_logo.svg.png"},
+{name:"Kanal D2",cat:"General",url:"https://stream2.kanald.ro/iphone/knd2-live.m3u8",q:"1080i"},
+{name:"Prima TV HD",cat:"General",url:"http://eb4b8dcf.kablakaka.ru/iptv/AE8BY6FHF5ZGAG/6995/index.m3u8",q:"HD"},
+{name:"National TV",cat:"General",url:"https://hls01ns.antenaplay.ro/hls/national-tv-sd/index.m3u8",q:"SD"},
+{name:"B1 TV",cat:"General",url:"https://hls02ns.antenaplay.ro/hls/b1-tv-hd/index.m3u8",q:"HD"},
+{name:"Acasa HD",cat:"General",url:"http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-pro2/live_fullhd?offsetSeconds=0",q:"1080p"},
+{name:"Acasa Gold",cat:"General",url:"http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-progold/live_fullhd?offsetSeconds=0",q:"1080p"},
+{name:"Boom TV",cat:"General",url:"https://tvboom.ro/live-tv/live.m3u8",q:"1080p"},
+{name:"Super TV",cat:"General",url:"https://live.supertv.ro/live/supertv/playlist.m3u8",q:"1080i"},
+{name:"Qub TV",cat:"General",url:"https://live.djemba.ro/memfs/474f9942-f72b-4130-817a-435cd54b2c36.m3u8",q:"HD"},
+{name:"Dotto TV",cat:"General",url:"https://live.dottotv.ro/index.m3u8",q:"1080p"},
+{name:"HD365 TV",cat:"General",url:"https://s2.netstreaming.eu/hd365.m3u8",q:"HD"},
+{name:"Telestar 1",cat:"General",url:"https://dvb.tennet.ro/mobile_tv/telestar.m3u8",q:"SD"},
+{name:"Tele7ABC HD",cat:"General",url:"https://live.tele7abc.ro/hls/stream/index.m3u8",q:"720p"},
+{name:"Columna TV",cat:"General",url:"https://cdn.streamnet.pro/columnatv/live/playlist.m3u8",q:"SD"},
+{name:"Metropola TV",cat:"General",url:"https://www.livemetropolatv.ro/MetropolaTV/Metro/playlist.m3u8",q:"1080p"},
+{name:"Muscel TV",cat:"General",url:"https://cdn.streamnet.pro/musceltv/live/playlist.m3u8",q:"720p"},
+{name:"Intermedia TV",cat:"General",url:"https://live.intermediatv.ro/ram/playlist.m3u8",q:"576p"},
+{name:"Banat TV",cat:"General",url:"https://www.btv.ro/hls/banat-tv.m3u8",q:"HD"},
+{name:"Bucovina TV",cat:"General",url:"https://www.bucovinatv.ro/proxy/video/playlist.m3u8",q:"576i"},
+{name:"Sangeorz TV",cat:"General",url:"https://live.sangeorztv.ro:8443/live/index.m3u8?cookieCheck=1",q:"576p"},
+{name:"ROTV Valencia",cat:"General",url:"https://rotv.romediavalencia.com:3839/live/rotvlive.m3u8",q:"720p"},
+{name:"LiraTV",cat:"General",url:"https://cloud2.streaminglivehd.com:1936/liratv/liratv/playlist.m3u8",q:"720p"},
+{name:"Arges TV",cat:"General",url:"https://btutzctahuf0wjoq.cdn.streamingserver.io/hls/yjvam8hlp2g3u08z02tv0yz66rq3cy.m3u8",q:"720p"},
+{name:"Hunedoara 1",cat:"General",url:"https://netstreaming.eu/hd1.m3u8",q:"480p"},
+{name:"IasiTV Life",cat:"General",url:"https://tv.streambox.ro/hls/itv/index.m3u8",q:"1080p"},
+{name:"JOB TV",cat:"General",url:"https://jobtvserver.eu/hls/stream.m3u8",q:"1080p"},
+{name:"TV Plus Suceava",cat:"General",url:"http://85.186.22.140/testing/pl5/playlist/ram/playlist.m3u8",q:"576p"},
+{name:"TeleM Botosani",cat:"General",url:"http://89.137.197.15:8080/testing/pl5/playlist/ram/playlist.m3u8",q:"540p"},
+{name:"Nova TV Brasov",cat:"General",url:"http://novapress.ro:2022/live/nova/playlist.m3u8",q:"576p"},
+{name:"TV Buzau",cat:"General",url:"http://78.96.33.89:8080",q:"576p"},
+{name:"TVSat",cat:"General",url:"http://89.38.8.130:39443",q:"SD"},
+{name:"TeleMoldova+",cat:"General",url:"https://vdo.ssl-stream.com:3247/stream/play.m3u8",q:"HD"},
+{name:"TV SUD",cat:"General",url:"https://stream2.live-stream.ro/WebRTCApp/streams/118334672595255049029831.m3u8",q:"1080p"},
+{name:"Traditional TV",cat:"General",url:"http://83.103.149.75:8085/udp/239.30.0.9:4000",q:"1080p"},
+// ===== MOVIES =====
+{name:"Pro Cinema",cat:"Movies",url:"http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-procinema/live_fullhd?offsetSeconds=0",q:"1080p"},
+{name:"Film Now HD",cat:"Movies",url:"https://lbgo.bozztv.com/ssh101/ssh101/filmnoww/playlist.m3u8",q:"1080i"},
+{name:"Cinemaraton Plus",cat:"Movies",url:"https://hls02ns.antenaplay.ro/hls/cinemaraton-plus-hd/index.m3u8",q:"1080i"},
+{name:"Nostalgia TV",cat:"Movies",url:"https://hls02ns.antenaplay.ro/hls/nostalgia-hd/index.m3u8",q:"1080p"},
+{name:"Comedy Play",cat:"Movies",url:"https://stream1.antenaplay.ro/live/ComedyPlay/chunklist.m3u8",q:"576i"},
+{name:"CineWow",cat:"Movies",url:"http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-aleph-news/live_hq?offsetSeconds=0",q:"576p"},
+{name:"Bollywood HD",cat:"Movies",url:"http://103.213.31.109:90/BollywoodHD/playlist.m3u8",q:"1080p"},
+{name:"Bollywood Film",cat:"Movies",url:"https://tvextra-hls.b-cdn.net/bollywoodfilm/bollywoodfilm.m3u8",q:"HD"},
+{name:"Bollywood Classic RO",cat:"Movies",url:"https://flash1.bogulus1.cfd/boly/usergenr9j8s2t.m3u8",q:"HD"},
+{name:"Bollywood HD Russia",cat:"Movies",url:"https://xykt-fix.github.io/cinerama_edge01/hls/BOLLYWOOD_RU/Movie009.m3u8",q:"576p"},
+// ===== SPORTS =====
+{name:"Pro Arena HD",cat:"Sports",url:"http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-prox/live_fullhd?offsetSeconds=0",q:"1080p"},
+{name:"Digi Sport 2 HD",cat:"Sports",url:"https://lbgo.bozztv.com/ssh101/ssh101/digisport222/playlist.m3u8",q:"1080i"},
+{name:"TVR Sport",cat:"Sports",url:"https://tvr-sport.lg.mncdn.com/tvrsport/smil:tvrsport.smil/playlist.m3u8",q:"HD"},
+{name:"Voyo Sport 1",cat:"Sports",url:"http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-protv-plus16/live_fullhd?offsetSeconds=0",q:"1080p"},
+{name:"Formula 1 AntenaPlay",cat:"Sports",url:"https://live4dai.antenaplay.ro/live2_sdi09/live2_sdi09_600k.m3u8",q:"576p"},
+{name:"Asia Express NonStop",cat:"Sports",url:"https://live4dai.antenaplay.ro/live2_sport05/live2_sport05_600k.m3u8",q:"576i"},
+{name:"Red Bull TV",cat:"Sports",url:"https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8",q:"1080p",logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Red_Bull_TV_logo.svg/320px-Red_Bull_TV_logo.svg.png"},
+// ===== MUSIC =====
+{name:"Kiss TV",cat:"Music",url:"https://tv.broadcasting.ro/kisstv/a629c031-2170-4ee9-a36d-87a891aa3131.m3u8",q:"1080p"},
+{name:"Magic TV",cat:"Music",url:"https://tv.broadcasting.ro/magictv/925f90db-5c88-4190-a53d-5163cdffe6f4.m3u8",q:"720p"},
+{name:"Rock TV",cat:"Music",url:"https://tv.broadcasting.ro/rocktv/85c83a80-4f71-4f2d-a8d6-43f676896bcb.m3u8",q:"720p"},
+{name:"Atomic TV",cat:"Music",url:"https://atomic.streamnet.ro/atomictv.m3u8",q:"360p"},
+{name:"Atomic Academy TV",cat:"Music",url:"https://atomic.streamnet.ro/academia.m3u8",q:"480p"},
+{name:"Mooz Dance",cat:"Music",url:"https://tvextra-hls.b-cdn.net/moozdance/moozdance.m3u8",q:"HD"},
+{name:"Mooz Hits",cat:"Music",url:"https://tvextra-hls.b-cdn.net/moozhits/moozhits.m3u8",q:"HD"},
+{name:"Mooz Ro!",cat:"Music",url:"https://tvextra-hls.b-cdn.net/moozro/moozro.m3u8",q:"HD"},
+{name:"Mooz Love",cat:"Music",url:"https://tvextra-hls.b-cdn.net/moozlove/moozlove.m3u8",q:"576p"},
+{name:"Mooz Retro",cat:"Music",url:"https://tvextra-hls.b-cdn.net/moozretro/moozretro.m3u8",q:"576p"},
+{name:"Party Mix HD",cat:"Music",url:"https://hls02ns.antenaplay.ro/hls/party-mix-hd/index.m3u8",q:"1080p"},
+{name:"Tele7music",cat:"Music",url:"https://live.tele7music.ro/hls/stream/index.m3u8",q:"576i"},
+{name:"H!t Music Channel",cat:"Music",url:"http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-mooz-dance/live_hq?offsetSeconds=0",q:"HQ"},
+{name:"Music Channel",cat:"Music",url:"http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-ncn/live_hq?offsetSeconds=0",q:"HQ"},
+{name:"Disco Mix",cat:"Music",url:"http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-disco-mix/live_hq?offsetSeconds=0",q:"576p"},
+{name:"Radio Fx Net",cat:"Music",url:"https://streamlov.alsolnet.com/radiofxnet/live/playlist.m3u8",q:"720p"},
+{name:"Impact TV",cat:"Music",url:"https://live.tvimpact.ro:8088/hevc/index.m3u8",q:"1080p"},
+{name:"Impact TV Dance",cat:"Music",url:"https://online.tvimpact.live/hls/dancetv.m3u8",q:"1080p"},
+{name:"Impact TV Manele",cat:"Music",url:"https://online.tvimpact.live/hls/impact_tv.m3u8",q:"1080p"},
+{name:"Impact TV 2",cat:"Music",url:"https://online.tvimpact.live/hls/impact_tv2.m3u8",q:"1080p"},
+{name:"TraLaLa TV",cat:"Music",url:"https://hls01ns.antenaplay.ro/hls/tralala-hd/index.m3u8",q:"HD"},
+{name:"Rapsodia TV",cat:"Music",url:"http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-rapsodia-tv/live_hq?offsetSeconds=0",q:"HQ"},
+// ===== KIDS =====
+{name:"Cartoon Network",cat:"Kids",url:"https://lbgo.bozztv.com/ssh101/ssh101/cartoonnetwork/playlist.m3u8",q:"720p"},
+{name:"Nickelodeon RO",cat:"Kids",url:"https://lbgo.bozztv.com/ssh101/ssh101/nickelodeonro/playlist.m3u8",q:"720p"},
+{name:"Disney Channel RO",cat:"Kids",url:"https://lbgo.bozztv.com/ssh101/ssh101/disneyro/playlist.m3u8",q:"720p"},
+{name:"Boomerang",cat:"Kids",url:"https://lbgo.bozztv.com/ssh101/ssh101/boomerang/playlist.m3u8",q:"576p"},
+{name:"JimJam",cat:"Kids",url:"https://lbgo.bozztv.com/ssh101/ssh101/jimjam/playlist.m3u8",q:"576p"},
+{name:"Minimax",cat:"Kids",url:"https://lbgo.bozztv.com/ssh101/ssh101/minimax/playlist.m3u8",q:"576p"},
+{name:"Baby TV",cat:"Kids",url:"https://lbgo.bozztv.com/ssh101/ssh101/babytv/playlist.m3u8",q:"576p"},
+{name:"Duck TV",cat:"Kids",url:"https://lbgo.bozztv.com/ssh101/ssh101/ducktv/playlist.m3u8",q:"576p"},
+// ===== DOCUMENTARY =====
+{name:"Discovery Channel",cat:"Documentary",url:"https://lbgo.bozztv.com/ssh101/ssh101/discovery/playlist.m3u8",q:"1080p"},
+{name:"National Geographic",cat:"Documentary",url:"https://lbgo.bozztv.com/ssh101/ssh101/natgeo/playlist.m3u8",q:"1080p"},
+{name:"History Channel",cat:"Documentary",url:"https://lbgo.bozztv.com/ssh101/ssh101/history/playlist.m3u8",q:"1080p"},
+{name:"BBC Earth",cat:"Documentary",url:"https://lbgo.bozztv.com/ssh101/ssh101/bbcearth/playlist.m3u8",q:"1080p"},
+{name:"Viasat Nature",cat:"Documentary",url:"https://lbgo.bozztv.com/ssh101/ssh101/viasatnature/playlist.m3u8",q:"720p"},
+{name:"Viasat History",cat:"Documentary",url:"https://lbgo.bozztv.com/ssh101/ssh101/viasathistory/playlist.m3u8",q:"720p"},
+{name:"TLC",cat:"Documentary",url:"https://lbgo.bozztv.com/ssh101/ssh101/tlc/playlist.m3u8",q:"720p"},
+{name:"ID Investigation",cat:"Documentary",url:"https://lbgo.bozztv.com/ssh101/ssh101/idinvestigation/playlist.m3u8",q:"720p"},
+// ===== INTERNATIONAL =====
+{name:"CNN International",cat:"International",url:"https://lbgo.bozztv.com/ssh101/ssh101/cnn/playlist.m3u8",q:"1080p",logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/CNN_International_logo.svg/320px-CNN_International_logo.svg.png"},
+{name:"BBC World News",cat:"International",url:"https://lbgo.bozztv.com/ssh101/ssh101/bbcworld/playlist.m3u8",q:"1080p",logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/BBC_World_News_logo.svg/320px-BBC_World_News_logo.svg.png"},
+{name:"Al Jazeera English",cat:"International",url:"https://live-hls-web-aje.getaj.net/AJE/index.m3u8",q:"1080p",logo:"https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Al_Jazeera_English.svg/320px-Al_Jazeera_English.svg.png"},
+{name:"France 24 English",cat:"International",url:"https://static.france24.com/live/F24_EN_LO_HLS/master_web.m3u8",q:"1080p"},
+{name:"DW English",cat:"International",url:"https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/index.m3u8",q:"1080p"},
+{name:"RT News",cat:"International",url:"https://rt-glb.rtvideo.ru/hls/rt_en.m3u8",q:"1080p"},
+{name:"Sky News",cat:"International",url:"https://lbgo.bozztv.com/ssh101/ssh101/skynews/playlist.m3u8",q:"1080p"},
+{name:"NHK World Japan",cat:"International",url:"https://nhkwlive-ojp.akamaized.net/hls/live/2003459/nhkwlive-ojp-en/index.m3u8",q:"1080p"},
+{name:"CGTN",cat:"International",url:"https://news.cgtn.com/resource/live/english/cgtn-news.m3u8",q:"1080p"},
+{name:"TRT World",cat:"International",url:"https://tv-trtworld.live.trt.com.tr/master.m3u8",q:"1080p"},
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let categories=["All","★ Favorites","🕐 Recently Watched","News","General","Movies","Sports","Music","Kids","Documentary","International","Imported"];
+let qualities=["all","4k","fhd","hd","sd"];
+let tools=["favToggle","fillToggle","volBtn","infoBtn","pipBtn","sleepBtn","audioBtn","importBtn"];
+let activeCategory="All";
+let qualityFilter="all";
+let showFavsOnly=false;
+let searchQuery="";
+let filteredChannels=[];
+let currentIdx=-1;
+let focusedArea="channels"; // cats, quals, channels, tools, search
+let focusedCatIdx=0;
+let focusedQualIdx=0;
+let focusedChannelIdx=0;
+let focusedToolIdx=0;
+let fillMode=false;
+let volVisible=false;
+let infoVisible=true;
+let pipMode=false;
+let hls=null;
+let miniHls=null;
+let favorites=[];
+let recentlyWatched=[];
+let importedChannels=[];
+let numpadBuffer="";
+let numpadTimer=null;
+let sleepTimerEnd=null;
+let sleepTimerInterval=null;
+let retryCount=0;
+let retryTimer=null;
+let heartbeatInterval=null;
+let trackMenuType=null; // 'audio' or 'subtitle'
+let focusedTrackIdx=0;
+
+// DOM refs
+const video=document.getElementById('video');
+const miniVideo=document.getElementById('miniVideo');
+const catTabsEl=document.getElementById('catTabs');
+const channelListInner=document.getElementById('channelListInner');
+const searchEl=document.getElementById('search');
+const countEl=document.getElementById('count');
+const nowPlayingEl=document.getElementById('nowPlaying');
+const statusDot=document.getElementById('statusDot');
+const statusText=document.getElementById('statusText');
+const errorToast=document.getElementById('errorToast');
+const chOverlay=document.getElementById('chOverlay');
+const ovTitle=document.getElementById('ovTitle');
+const ovMeta=document.getElementById('ovMeta');
+const ovEpg=document.getElementById('ovEpg');
+const volWrap=document.getElementById('volWrap');
+const volSlider=document.getElementById('volSlider');
+const volVal=document.getElementById('volVal');
+const placeholder=document.getElementById('placeholder');
+const miniPlayer=document.getElementById('miniPlayer');
+const miniLabel=document.getElementById('miniLabel');
+const sleepTimerOverlay=document.getElementById('sleepTimerOverlay');
+const numpadOverlay=document.getElementById('numpadOverlay');
+const numDisplay=document.getElementById('numDisplay');
+const trackMenu=document.getElementById('trackMenu');
+const trackMenuTitle=document.getElementById('trackMenuTitle');
+const trackMenuItems=document.getElementById('trackMenuItems');
+const spinner=document.getElementById('spinner');
+const networkStatus=document.getElementById('networkStatus');
+const importModal=document.getElementById('importModal');
+const m3uFile=document.getElementById('m3uFile');
+const clockEl=document.getElementById('clock');
+
+// ============================================================
+// PERSISTENCE — localStorage
+// ============================================================
+function loadFavorites(){
+try{ const s=localStorage.getItem('foxtv_favs'); if(s) favorites=JSON.parse(s); }catch(e){}
+}
+function saveFavorites(){
+try{ localStorage.setItem('foxtv_favs',JSON.stringify(favorites)); }catch(e){}
+}
+function loadLastChannel(){
+try{ const s=localStorage.getItem('foxtv_last_ch'); return s?parseInt(s,10):-1; }catch(e){ return -1; }
+}
+function saveLastChannel(idx){
+try{ localStorage.setItem('foxtv_last_ch',String(idx)); }catch(e){}
+}
+function loadRecentlyWatched(){
+try{ const s=localStorage.getItem('foxtv_recent'); if(s) recentlyWatched=JSON.parse(s); }catch(e){}
+}
+function saveRecentlyWatched(){
+try{ localStorage.setItem('foxtv_recent',JSON.stringify(recentlyWatched.slice(0,20))); }catch(e){}
+}
+function addToRecentlyWatched(idx){
+const ch=CHANNELS[idx];
+recentlyWatched=recentlyWatched.filter(r=>r.name!==ch.name);
+recentlyWatched.unshift({name:ch.name,cat:ch.cat,url:ch.url,q:ch.q,logo:ch.logo||null,ts:Date.now()});
+if(recentlyWatched.length>20) recentlyWatched=recentlyWatched.slice(0,20);
+saveRecentlyWatched();
+}
+
+// ============================================================
+// CLOCK
+// ============================================================
+function updateClock(){
+const now=new Date();
+const h=String(now.getHours()).padStart(2,'0');
+const m=String(now.getMinutes()).padStart(2,'0');
+clockEl.textContent=h+':'+m;
+}
+setInterval(updateClock,10000);
+updateClock();
+
+// ============================================================
+// NETWORK STATUS
+// ============================================================
+function checkNetwork(){
+if(!navigator.onLine){ networkStatus.classList.add('show'); }
+else{ networkStatus.classList.remove('show'); }
+}
+window.addEventListener('online',checkNetwork);
+window.addEventListener('offline',checkNetwork);
+checkNetwork();
+
+// ============================================================
+// EPG MOCK DATA (static schedule based on time of day)
+// ============================================================
+function getEpgNow(channelName){
+const hour=new Date().getHours();
+const schedules={
+"News":["Știri de dimineață","Actualități","Breaking News","Dezbateri","Știri de seară","Analize","Rezumat zilnic"],
+"General":["Emisiune matinală","Serial românesc","Film artistic","Talk-show","Jurnal","Divertisment","Reality show"],
+"Movies":["Film de acțiune","Comedie","Dramă","Thriller","Film romantic","Documentar cinematografic","Clasic"],
+"Sports":["Știri sportive","Fotbal Live","Tenis","Baschet","Sporturi extreme","Analiză sportivă","Reluare meci"],
+"Music":["Hituri noi","Top 40","Rock Classics","Electronic","Pop Românesc","Retro Hits","Live Concert"],
+"Kids":["Desene animate","Educație","Povești","Jocuri","Aventură","Filme pentru copii","Muzică pentru copii"],
+"Documentary":["Natură sălbatică","Istorie","Știință","Spațiu","Civilizații","Tehnologie","Animale"],
+"International":["World News","Global Report","Business Today","Culture","Science & Tech","World Documentary","Live Coverage"],
+};
+const cat=CHANNELS.find(c=>c.name===channelName)?.cat;
+const list=schedules[cat]||schedules["General"];
+const idx=Math.floor(hour/3.5)%list.length;
+return list[idx]+" • "+hour+":00";
+}
+
+// ============================================================
+// QUALITY HELPERS
+// ============================================================
+function qLevel(q){
+const s=(q||'').toUpperCase();
+if(s.includes('4K')||s.includes('2160')) return '4k';
+if(s.includes('1080')||s.includes('FHD')) return 'fhd';
+if(s.includes('720')||s.includes('HD')||s.includes('1280')) return 'hd';
+return 'sd';
+}
+function qBadge(q){
+const l=qLevel(q);
+if(l==='4k') return '<span class="badge uhd">4K</span>';
+if(l==='fhd') return '<span class="badge fhd">FHD</span>';
+if(l==='hd') return '<span class="badge hd">HD</span>';
+return '';
+}
+function isFav(name){ return favorites.includes(name); }
+function toggleFav(name){
+if(isFav(name)) favorites=favorites.filter(f=>f!==name);
+else favorites.push(name);
+saveFavorites();
+renderChannelList();
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function getInitials(n){ return n.split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase(); }
+function renderCategories(){
+catTabsEl.innerHTML=categories.map((c,i)=>{
+const classes=['cat-tab'];
+if(c===activeCategory) classes.push('active');
+if(i===focusedCatIdx && focusedArea==="cats") classes.push('focused');
+return `<button class="${classes.join(' ')}" data-idx="${i}">${c}</button>`;
+}).join('');
+}
+function renderQualities(){
+document.querySelectorAll('.q-btn').forEach((b,i)=>{
+b.classList.toggle('active',qualities[i]===qualityFilter);
+b.classList.toggle('focused',i===focusedQualIdx && focusedArea==="quals");
+});
+}
+function renderTools(){
+tools.forEach((id,i)=>{
+const el=document.getElementById(id);
+if(el) el.classList.toggle('focused',i===focusedToolIdx && focusedArea==="tools");
+});
+}
+function applyFilters(){
+let base=CHANNELS.concat(importedChannels);
+if(activeCategory==="★ Favorites"){
+base=base.filter(c=>isFav(c.name));
+} else if(activeCategory==="🕐 Recently Watched"){
+base=recentlyWatched;
+} else if(activeCategory!=="All"){
+base=base.filter(c=>c.cat===activeCategory);
+}
+filteredChannels=base.filter(c=>{
+const matchFav=!showFavsOnly||isFav(c.name);
+const matchSearch=!searchQuery||c.name.toLowerCase().includes(searchQuery.toLowerCase())||(c.cat||'').toLowerCase().includes(searchQuery.toLowerCase());
+const matchQual=qualityFilter==="all"||qLevel(c.q)===qualityFilter;
+return matchFav&&matchSearch&&matchQual;
+});
+focusedChannelIdx=0;
+renderChannelList();
+countEl.textContent=`${filteredChannels.length} / ${CHANNELS.length+importedChannels.length} channels`;
+}
+function renderChannelList(){
+if(!filteredChannels.length){
+channelListInner.innerHTML=`<div class="empty">No channels match your filters.</div>`;
+channelListInner.style.transform='translateY(0)';
+return;
+}
+channelListInner.innerHTML=filteredChannels.map((c,i)=>{
+const gi=CHANNELS.indexOf(c);
+const active=gi>=0&&gi===currentIdx;
+const focused=i===focusedChannelIdx&&focusedArea==="channels";
+const fav=isFav(c.name);
+const classes=['channel'];
+if(active) classes.push('active');
+if(focused) classes.push('focused');
+const logoHtml=c.logo?`<img src="${c.logo}" alt="" onerror="this.parentElement.textContent='${getInitials(c.name)}'">`:getInitials(c.name);
+const epgNow=getEpgNow(c.name);
+return `<div class="${classes.join(' ')}" data-idx="${gi>=0?gi:i}" data-fidx="${i}">
+<div class="logo">${logoHtml}</div>
+<div class="meta"><div class="name">${c.name}</div><div class="sub">${c.cat||''} · ${c.q||''}</div><div class="epg-now">${epgNow}</div></div>
+<div class="badges">${qBadge(c.q)}</div>
+<span class="fav-star ${fav?'on':''}">${fav?'★':'☆'}</span>
+</div>`;
+}).join('');
+const ITEM_HEIGHT=94;
+const VISIBLE_ITEMS=8;
+const maxScroll=Math.max(0,filteredChannels.length-VISIBLE_ITEMS);
+const scrollIdx=Math.min(Math.max(0,focusedChannelIdx-Math.floor(VISIBLE_ITEMS/2)),maxScroll);
+channelListInner.style.transform=`translateY(${-scrollIdx*ITEM_HEIGHT}px)`;
+}
+function updateFocus(){
+renderCategories();
+renderQualities();
+renderTools();
+renderChannelList();
+searchEl.classList.toggle('focused',focusedArea==="search");
+}
+
+// ============================================================
+// STREAM HEALTH MONITORING & AUTO-RETRY
+// ============================================================
+function startHeartbeat(){
+if(heartbeatInterval) clearInterval(heartbeatInterval);
+heartbeatInterval=setInterval(()=>{
+if(currentIdx<0||!hls) return;
+if(video.paused&&video.readyState<3){
+setStatus('loading','Reconnecting...');
+if(hls) hls.startLoad();
+}
+},10000);
+}
+function stopHeartbeat(){
+if(heartbeatInterval){clearInterval(heartbeatInterval);heartbeatInterval=null;}
+}
+function scheduleRetry(ch){
+retryCount++;
+const delay=Math.min(2000*Math.pow(2,retryCount-1),30000);
+setStatus('loading',`Retry ${retryCount} (${Math.round(delay/1000)}s)...`);
+if(retryTimer) clearTimeout(retryTimer);
+retryTimer=setTimeout(()=>{
+if(currentIdx>=0&&CHANNELS[currentIdx]===ch) playChannel(currentIdx);
+},delay);
+}
+function resetRetry(){
+retryCount=0;
+if(retryTimer){clearTimeout(retryTimer);retryTimer=null;}
+}
+
+// ============================================================
+// PLAYBACK
+// ============================================================
+function setStatus(s,t){ statusDot.className='dot '+s; statusText.textContent=t; }
+function showError(m){ errorToast.textContent=m; errorToast.classList.add('show'); setTimeout(()=>errorToast.classList.remove('show'),5000); }
+function destroyHls(){ if(hls){hls.destroy();hls=null;} video.pause(); video.removeAttribute('src'); video.load(); stopHeartbeat(); }
+function destroyMiniHls(){ if(miniHls){miniHls.destroy();miniHls=null;} miniVideo.pause(); miniVideo.removeAttribute('src'); miniVideo.load(); }
+
+function playChannel(idx){
+if(idx<0||idx>=CHANNELS.length+importedChannels.length) return;
+resetRetry();
+currentIdx=idx;
+const ch=idx<CHANNELS.length?CHANNELS[idx]:importedChannels[idx-CHANNELS.length];
+destroyHls();
+placeholder.style.display='none';
+video.style.display='block';
+video.classList.remove('fade-in');
+video.classList.add('fade-out');
+setTimeout(()=>{video.classList.remove('fade-out');video.classList.add('fade-in');},150);
+spinner.classList.add('show');
+nowPlayingEl.innerHTML=`<span class="ch-name">${ch.name}</span> · ${ch.q||''}`;
+setStatus('loading','Connecting');
+ovTitle.textContent=ch.name;
+ovMeta.textContent=`${ch.cat||''} · ${ch.q||''}`;
+ovEpg.textContent=getEpgNow(ch.name);
+if(infoVisible){ chOverlay.classList.add('show'); setTimeout(()=>chOverlay.classList.remove('show'),4000); }
+const fIdx=filteredChannels.findIndex(c=>c===ch);
+if(fIdx>=0) focusedChannelIdx=fIdx;
+updateFocus();
+saveLastChannel(idx);
+addToRecentlyWatched(idx);
+if(Hls.isSupported()){
+hls=new Hls({enableWorker:true,lowLatencyMode:false,maxBufferLength:30,maxMaxBufferLength:60});
+hls.loadSource(ch.url); hls.attachMedia(video);
+hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+setStatus('live','LIVE');
+spinner.classList.remove('show');
+video.play().catch(()=>{});
+startHeartbeat();
+// Setup PIP if active
+if(pipMode) setupMiniPlayer(ch);
+});
+hls.on(Hls.Events.ERROR,(ev,data)=>{
+if(data.fatal){
+spinner.classList.remove('show');
+if(data.type===Hls.ErrorTypes.NETWORK_ERROR){
+setStatus('err','Network error');
+showError(`Stream error: ${ch.name}. Retrying...`);
+scheduleRetry(ch);
+} else if(data.type===Hls.ErrorTypes.MEDIA_ERROR){
+setStatus('loading','Recovering');
+hls.recoverMediaError();
+} else {
+setStatus('err','Fatal error');
+showError(`Cannot play ${ch.name}.`);
+destroyHls();
+}
+}
+});
+} else if(video.canPlayType('application/vnd.apple.mpegurl')){
+video.src=ch.url;
+video.addEventListener('loadedmetadata',()=>{
+setStatus('live','LIVE');
+spinner.classList.remove('show');
+video.play().catch(()=>{});
+startHeartbeat();
+},{once:true});
+video.addEventListener('error',()=>{
+spinner.classList.remove('show');
+setStatus('err','Error');
+showError(`Cannot play ${ch.name}.`);
+scheduleRetry(ch);
+},{once:true});
+} else {
+spinner.classList.remove('show');
+setStatus('err','No HLS');
+showError('HLS not supported on this device.');
+}
+}
+function playCurrentFocused(){
+if(filteredChannels[focusedChannelIdx]){
+const ch=filteredChannels[focusedChannelIdx];
+const gi=CHANNELS.indexOf(ch);
+playChannel(gi>=0?gi:CHANNELS.length+importedChannels.indexOf(ch));
+}
+}
+function nextChannel(){
+if(!filteredChannels.length) return;
+focusedChannelIdx=(focusedChannelIdx+1)%filteredChannels.length;
+playCurrentFocused();
+}
+function prevChannel(){
+if(!filteredChannels.length) return;
+focusedChannelIdx=(focusedChannelIdx-1+filteredChannels.length)%filteredChannels.length;
+playCurrentFocused();
+}
+
+// ============================================================
+// MINI PLAYER / PIP
+// ============================================================
+function setupMiniPlayer(ch){
+destroyMiniHls();
+if(!pipMode||!ch) return;
+miniPlayer.classList.add('show');
+miniLabel.textContent=ch.name;
+if(Hls.isSupported()){
+miniHls=new Hls({enableWorker:true,lowLatencyMode:true});
+miniHls.loadSource(ch.url);
+miniHls.attachMedia(miniVideo);
+miniHls.on(Hls.Events.MANIFEST_PARSED,()=>{miniVideo.play().catch(()=>{});});
+} else if(miniVideo.canPlayType('application/vnd.apple.mpegurl')){
+miniVideo.src=ch.url;
+miniVideo.play().catch(()=>{});
+}
+}
+function togglePip(){
+pipMode=!pipMode;
+document.getElementById('pipBtn').classList.toggle('active',pipMode);
+if(pipMode&&currentIdx>=0){
+const ch=currentIdx<CHANNELS.length?CHANNELS[currentIdx]:importedChannels[currentIdx-CHANNELS.length];
+setupMiniPlayer(ch);
+} else {
+miniPlayer.classList.remove('show');
+destroyMiniHls();
+}
+}
+
+// ============================================================
+// SLEEP TIMER
+// ============================================================
+const SLEEP_OPTIONS=[0,30,60,90,120]; // minutes
+let sleepOptionIdx=0;
+function toggleSleepTimer(){
+sleepOptionIdx=(sleepOptionIdx+1)%SLEEP_OPTIONS.length;
+const mins=SLEEP_OPTIONS[sleepOptionIdx];
+document.getElementById('sleepBtn').classList.toggle('active',mins>0);
+if(sleepTimerInterval){clearInterval(sleepTimerInterval);sleepTimerInterval=null;}
+if(sleepTimerEnd){clearTimeout(sleepTimerEnd);sleepTimerEnd=null;}
+if(mins===0){
+sleepTimerOverlay.classList.remove('show');
+return;
+}
+sleepTimerEnd=setTimeout(()=>{
+video.pause();
+destroyHls();
+sleepTimerOverlay.classList.remove('show');
+showError('Sleep timer — playback stopped.');
+setStatus('','Sleep');
+},mins*60*1000);
+sleepTimerOverlay.classList.add('show');
+updateSleepDisplay(mins);
+sleepTimerInterval=setInterval(()=>{
+const remaining=Math.max(0,Math.ceil((sleepTimerEnd-Date.now())/60000));
+if(remaining<=0){clearInterval(sleepTimerInterval);sleepTimerInterval=null;}
+else updateSleepDisplay(remaining);
+},30000);
+}
+function updateSleepDisplay(mins){
+const h=Math.floor(mins/60);
+const m=mins%60;
+sleepTimerOverlay.textContent=`🌙 Sleep: ${h>0?h+'h ':''}${m}m`;
+}
+
+// ============================================================
+// AUDIO / SUBTITLE TRACK SELECTION
+// ============================================================
+function showTrackMenu(type){
+trackMenuType=type;
+focusedTrackIdx=0;
+trackMenuTitle.textContent=type==='audio'?'Audio Tracks':'Subtitles';
+let items=[];
+if(hls){
+if(type==='audio'){
+const tracks=hls.audioTracks||[];
+items=tracks.map((t,i)=>({id:i,label:t.name||t.lang||`Track ${i+1}`,active:hls.audioTrack===i}));
+} else {
+const subs=hls.subtitleTracks||[];
+items=subs.map((t,i)=>({id:i,label:t.name||t.lang||`Subtitle ${i+1}`,active:hls.subtitleTrack===i}));
+items.unshift({id:-1,label:'Off',active:hls.subtitleTrack<0});
+}
+}
+if(!items.length) items=[{id:0,label:'Default',active:true}];
+trackMenuItems.innerHTML=items.map((it,i)=>{
+const cls=['track-item'];
+if(it.active) cls.push('active');
+if(i===focusedTrackIdx) cls.push('focused');
+return `<div class="${cls.join(' ')}" data-id="${it.id}">${it.label}</div>`;
+}).join('');
+trackMenu.classList.add('show');
+}
+function hideTrackMenu(){ trackMenu.classList.remove('show'); trackMenuType=null; }
+function selectTrack(){
+const items=trackMenuItems.querySelectorAll('.track-item');
+if(!items[focusedTrackIdx]) return;
+const id=parseInt(items[focusedTrackIdx].dataset.id,10);
+if(hls){
+if(trackMenuType==='audio') hls.audioTrack=id;
+else hls.subtitleTrack=id;
+}
+hideTrackMenu();
+}
+
+// ============================================================
+// M3U IMPORT
+// ============================================================
+function parseM3U(text){
+const lines=text.split('\n');
+const parsed=[];
+let current={};
+for(const line of lines){
+const l=line.trim();
+if(l.startsWith('#EXTINF:')){
+const match=l.match(/#EXTINF:[^,]*,(.*)/);
+current.name=match?match[1].trim():'Unknown';
+const logoMatch=l.match(/tvg-logo="([^"]*)"/);
+if(logoMatch) current.logo=logoMatch[1];
+const groupMatch=l.match(/group-title="([^"]*)"/);
+current.cat=groupMatch?groupMatch[1]:'Imported';
+} else if(l&&!l.startsWith('#')){
+current.url=l;
+current.q='HD';
+if(current.name&&current.url) parsed.push({...current});
+current={};
+}
+}
+return parsed;
+}
+m3uFile.addEventListener('change',(e)=>{
+const file=e.target.files[0];
+if(!file) return;
+const reader=new FileReader();
+reader.onload=(ev)=>{
+const parsed=parseM3U(ev.target.result);
+if(parsed.length){
+importedChannels=parsed;
+if(!categories.includes('Imported')) categories.push('Imported');
+applyFilters();
+showError(`Imported ${parsed.length} channels.`);
+} else {
+showError('No valid channels found in file.');
+}
+importModal.classList.remove('show');
+};
+reader.readAsText(file);
+});
+document.getElementById('importCancel').addEventListener('click',()=>{
+importModal.classList.remove('show');
+});
+
+// ============================================================
+// NUMPAD DIRECT ENTRY
+// ============================================================
+function handleNumpadDigit(digit){
+numpadBuffer+=digit;
+numDisplay.textContent=numpadBuffer;
+numpadOverlay.classList.add('show');
+if(numpadTimer) clearTimeout(numpadTimer);
+numpadTimer=setTimeout(()=>{
+const num=parseInt(numpadBuffer,10);
+numpadOverlay.classList.remove('show');
+numpadBuffer="";
+if(num>=0&&num<CHANNELS.length+importedChannels.length){
+playChannel(num);
+} else {
+showError(`Channel ${num} not found.`);
+}
+},1500);
+}
+
+// ============================================================
+// REMOTE CONTROL / KEYBOARD
+// ============================================================
+document.addEventListener('keydown',(e)=>{
+const key=e.keyCode;
+// Numpad overlay active
+if(numpadOverlay.classList.contains('show')){
+if(key>=48&&key<=57){ e.preventDefault(); handleNumpadDigit(String.fromCharCode(key)); return; }
+if(key>=96&&key<=105){ e.preventDefault(); handleNumpadDigit(String.fromCharCode(key-48)); return; }
+if(key===13||key===27||key===461){ e.preventDefault(); numpadOverlay.classList.remove('show'); numpadBuffer=""; return; }
+return;
+}
+// Track menu active
+if(trackMenu.classList.contains('show')){
+if(key===38){ e.preventDefault(); focusedTrackIdx=Math.max(0,focusedTrackIdx-1); showTrackMenu(trackMenuType); return; }
+if(key===40){ e.preventDefault(); const cnt=trackMenuItems.querySelectorAll('.track-item').length; focusedTrackIdx=Math.min(cnt-1,focusedTrackIdx+1); showTrackMenu(trackMenuType); return; }
+if(key===13){ e.preventDefault(); selectTrack(); return; }
+if(key===27||key===461||key===10252){ e.preventDefault(); hideTrackMenu(); return; }
+return;
+}
+// Import modal
+if(importModal.classList.contains('show')){
+if(key===27||key===461||key===10252){ e.preventDefault(); importModal.classList.remove('show'); return; }
+return;
+}
+// Search mode
+if(focusedArea==="search"){
+if(key===13){ e.preventDefault(); searchEl.blur(); focusedArea="channels"; updateFocus(); }
+else if(key===27||key===461||key===10252){ e.preventDefault(); searchEl.value=""; searchQuery=""; searchEl.blur(); focusedArea="channels"; applyFilters(); updateFocus(); }
+else if(key===38){ e.preventDefault(); focusedArea="cats"; updateFocus(); }
+else if(key===40){ e.preventDefault(); focusedArea="channels"; updateFocus(); }
+return;
+}
+// Number keys for direct entry
+if(key>=48&&key<=57){ e.preventDefault(); handleNumpadDigit(String.fromCharCode(key)); return; }
+if(key>=96&&key<=105){ e.preventDefault(); handleNumpadDigit(String.fromCharCode(key-48)); return; }
+// Arrow Up
+if(key===38){
+e.preventDefault();
+if(focusedArea==="channels"){ focusedChannelIdx=Math.max(0,focusedChannelIdx-1); updateFocus(); }
+else if(focusedArea==="quals"){ focusedArea="cats"; updateFocus(); }
+else if(focusedArea==="cats"){ focusedCatIdx=Math.max(0,focusedCatIdx-1); activeCategory=categories[focusedCatIdx]; showFavsOnly=activeCategory==="★ Favorites"; document.getElementById('favToggle').classList.toggle('active',showFavsOnly); applyFilters(); updateFocus(); }
+else if(focusedArea==="tools"){ focusedArea="search"; updateFocus(); }
+}
+// Arrow Down
+else if(key===40){
+e.preventDefault();
+if(focusedArea==="channels"){ focusedChannelIdx=Math.min(filteredChannels.length-1,focusedChannelIdx+1); updateFocus(); }
+else if(focusedArea==="cats"){ focusedArea="quals"; updateFocus(); }
+else if(focusedArea==="quals"){ focusedArea="channels"; updateFocus(); }
+else if(focusedArea==="search"){ focusedArea="tools"; updateFocus(); }
+}
+// Arrow Left
+else if(key===37){
+e.preventDefault();
+if(focusedArea==="cats"){ focusedCatIdx=Math.max(0,focusedCatIdx-1); activeCategory=categories[focusedCatIdx]; showFavsOnly=activeCategory==="★ Favorites"; document.getElementById('favToggle').classList.toggle('active',showFavsOnly); applyFilters(); updateFocus(); }
+else if(focusedArea==="quals"){ focusedQualIdx=Math.max(0,focusedQualIdx-1); qualityFilter=qualities[focusedQualIdx]; applyFilters(); updateFocus(); }
+else if(focusedArea==="tools"){ focusedToolIdx=Math.max(0,focusedToolIdx-1); updateFocus(); }
+else if(focusedArea==="channels"){ focusedArea="cats"; updateFocus(); }
+}
+// Arrow Right
+else if(key===39){
+e.preventDefault();
+if(focusedArea==="cats"){ focusedCatIdx=Math.min(categories.length-1,focusedCatIdx+1); activeCategory=categories[focusedCatIdx]; showFavsOnly=activeCategory==="★ Favorites"; document.getElementById('favToggle').classList.toggle('active',showFavsOnly); applyFilters(); updateFocus(); }
+else if(focusedArea==="quals"){ focusedQualIdx=Math.min(qualities.length-1,focusedQualIdx+1); qualityFilter=qualities[focusedQualIdx]; applyFilters(); updateFocus(); }
+else if(focusedArea==="tools"){ focusedToolIdx=Math.min(tools.length-1,focusedToolIdx+1); updateFocus(); }
+else if(focusedArea==="channels"){ focusedArea="tools"; updateFocus(); }
+}
+// Enter / OK
+else if(key===13){
+e.preventDefault();
+if(focusedArea==="channels") playCurrentFocused();
+else if(focusedArea==="search") searchEl.focus();
+else if(focusedArea==="tools"){
+const toolId=tools[focusedToolIdx];
+if(toolId==="favToggle"){ showFavsOnly=!showFavsOnly; document.getElementById('favToggle').classList.toggle('active',showFavsOnly); activeCategory=showFavsOnly?"★ Favorites":"All"; applyFilters(); updateFocus(); }
+else if(toolId==="fillToggle"){ fillMode=!fillMode; video.classList.toggle('fill',fillMode); document.getElementById('fillToggle').classList.toggle('active',fillMode); }
+else if(toolId==="volBtn"){ volVisible=!volVisible; volWrap.classList.toggle('show',volVisible); document.getElementById('volBtn').classList.toggle('active',volVisible); if(volVisible) setTimeout(()=>{volWrap.classList.remove('show');volVisible=false;document.getElementById('volBtn').classList.remove('active');},4000); }
+else if(toolId==="infoBtn"){ infoVisible=!infoVisible; document.getElementById('infoBtn').classList.toggle('active',infoVisible); if(infoVisible&&currentIdx>=0){ chOverlay.classList.add('show'); setTimeout(()=>chOverlay.classList.remove('show'),4000); } }
+else if(toolId==="pipBtn"){ togglePip(); }
+else if(toolId==="sleepBtn"){ toggleSleepTimer(); }
+else if(toolId==="audioBtn"){ showTrackMenu('audio'); }
+else if(toolId==="importBtn"){ importModal.classList.add('show'); }
+}
+}
+// CH+ / PageDown
+else if(key===428||key===34){ e.preventDefault(); nextChannel(); }
+// CH- / PageUp
+else if(key===427||key===33){ e.preventDefault(); prevChannel(); }
+// * (106) - focus search
+else if(key===106){ e.preventDefault(); focusedArea="search"; searchEl.focus(); updateFocus(); }
+// # (107) - toggle favorites
+else if(key===107){ e.preventDefault(); showFavsOnly=!showFavsOnly; document.getElementById('favToggle').classList.toggle('active',showFavsOnly); activeCategory=showFavsOnly?"★ Favorites":"All"; applyFilters(); updateFocus(); }
+// Back / Return / Escape
+else if(key===27||key===461||key===10252){
+e.preventDefault();
+if(typeof tizen!=='undefined'&&tizen.application){ try{tizen.application.getCurrentApplication().exit();}catch(err){} }
+}
+});
+// Volume slider
+volSlider.addEventListener('input',()=>{ video.volume=volSlider.value/100; volVal.textContent=volSlider.value+'%'; });
+video.volume=0.8;
+// Search input
+searchEl.addEventListener('input',()=>{ searchQuery=searchEl.value; applyFilters(); });
+
+// ============================================================
+// INIT
+// ============================================================
+loadFavorites();
+loadRecentlyWatched();
+renderCategories();
+applyFilters();
+updateFocus();
+setStatus('','Idle');
+if(!Hls.isSupported()&&!video.canPlayType('application/vnd.apple.mpegurl')) showError('HLS playback not supported on this device.');
+// Auto-resume last channel
+const lastCh=loadLastChannel();
+if(lastCh>=0&&lastCh<CHANNELS.length){
+setTimeout(()=>playChannel(lastCh),500);
+}
+</script>
+</body>
+</html>

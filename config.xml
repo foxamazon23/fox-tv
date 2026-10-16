@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" id="https://foxtv.mihaivulpe.ro" version="1.0.0" viewmodes="maximized">
+    <tizen:application id="ro.mihaivulpe.foxtv" package="mihaivulpe" required_version="5.0"/>
+    <content src="index.html"/>
+    <name>FOX TV</name>
+    <description>FOX TV by Mihai Vulpe — Live Romanian TV channels for Samsung Smart TV</description>
+    <author href="https://mihaivulpe.ro">Mihai Vulpe</author>
+    <icon src="icon.png"/>
+    <tizen:metadata key="http://samsung.com/tv/metadata/prelaunch.support" value="true"/>
+    <tizen:privilege name="http://tizen.org/privilege/internet"/>
+    <tizen:privilege name="http://tizen.org/privilege/mediastorage"/>
+    <tizen:profile name="tv"/>
+    <access origin="*" subdomains="true"/>
+    <feature name="http://tizen.org/feature/screen.size.all"/>
+</widget>
