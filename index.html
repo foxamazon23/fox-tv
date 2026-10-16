@@ -133,6 +133,8 @@ body.tv .sub{font-size:16px}
 body.tv .logo{width:58px;height:58px}
 body.tv .chip{font-size:18px;padding:10px 18px}
 body.tv .star{display:none}
+body.tv .stage,body.tv .player,body.tv video{background:transparent}
+body.tv .osd{backdrop-filter:none;background:rgba(0,0,0,.85)}
 body.tv .chip.kfocus{outline:3px solid var(--accent);outline-offset:2px}
 </style>
 </head>
@@ -282,8 +284,11 @@ const CHANNELS=[
 {"n":"TRT World","c":"Internațional","u":"https://tv-trtworld.live.trt.com.tr/master.m3u8","q":"1080p","tv":1}
 ];
 
-const IS_TV = typeof tizen !== 'undefined' || /Tizen|SMART-TV|Web0S/i.test(navigator.userAgent);
-const ALL = CHANNELS.filter(c => IS_TV || !c.tv);
+const IS_TV_APP = typeof tizen !== 'undefined';
+const IS_TV = IS_TV_APP || /Tizen|SMART-TV|SmartTV|Web0S|NetCast|HbbTV/i.test(navigator.userAgent);
+const NATIVE_HLS = !!document.createElement('video').canPlayType('application/vnd.apple.mpegurl');
+// http:// streams only work inside the installed TV app; https streams without CORS work wherever the native player is used
+const ALL = CHANNELS.filter(c => !c.tv || (c.u.startsWith('http:') ? IS_TV_APP : (IS_TV && NATIVE_HLS)));
 const CATS = ['Toate','★ Favorite','Recente',...[...new Set(ALL.map(c=>c.c))]];
 const $ = id => document.getElementById(id);
 const v=$('v'), listEl=$('list');
@@ -318,7 +323,7 @@ function renderList(){
 }
 function status(cls,t){ $('dot').className='dot '+cls; }
 function osd(c){ $('osdN').textContent=c.n; $('osdM').textContent=`${c.c} · ${c.q}`; $('osd').classList.add('show'); clearTimeout(osdT); osdT=setTimeout(()=>$('osd').classList.remove('show'),3500); }
-function stop(){ if(hls){hls.destroy();hls=null;} v.removeAttribute('src'); v.load(); }
+function stop(){ if(hls){hls.destroy();hls=null;} v.onerror=null; v.removeAttribute('src'); v.load(); }
 function fail(){
  $('spin').classList.remove('show'); status('bad');
  $('errT').textContent=`${cur.n} nu merge acum`;
@@ -337,7 +342,17 @@ function play(c, keepTries){
  const vi=view.indexOf(c); if(vi>=0) kidx=vi;
  renderList();
  const ok=()=>{ $('spin').classList.remove('show'); status('live'); tries=0; };
- if(window.Hls && Hls.isSupported()){
+ const useNative = NATIVE_HLS && (IS_TV || !(window.Hls && Hls.isSupported()));
+ if(useNative){
+  v.src=c.u;
+  v.addEventListener('playing',ok,{once:true});
+  v.onerror=()=>{ if(cur!==c) return; if(window.Hls && Hls.isSupported() && !c.tv && tries<1){ tries++; stop(); playHls(c,ok); } else fail(); };
+  v.play().catch(()=>{ v.muted=true; v.play().catch(()=>{}); });
+ } else if(window.Hls && Hls.isSupported()){ playHls(c,ok); }
+ else { fail(); $('errP').textContent='Dispozitivul nu suportă redarea HLS.'; }
+}
+function playHls(c,ok){
+ {
   hls=new Hls({maxBufferLength:30,maxMaxBufferLength:60,manifestLoadingMaxRetry:2,levelLoadingMaxRetry:2,fragLoadingMaxRetry:3});
   hls.loadSource(c.u); hls.attachMedia(v);
   hls.on(Hls.Events.MANIFEST_PARSED,()=>{ v.play().catch(()=>{ v.muted=true; v.play().catch(()=>{}); }); });
@@ -347,12 +362,7 @@ function play(c, keepTries){
    if(d.type===Hls.ErrorTypes.NETWORK_ERROR && tries<1){ tries++; setTimeout(()=>{ if(cur===c) play(c,true); },1500); return; }
    fail();
   });
- } else if(v.canPlayType('application/vnd.apple.mpegurl')){
-  v.src=c.u;
-  v.addEventListener('playing',ok,{once:true});
-  v.onerror=()=>{ if(cur===c) fail(); };
-  v.play().catch(()=>{ v.muted=true; v.play().catch(()=>{}); });
- } else { fail(); $('errP').textContent='Dispozitivul nu suportă redarea HLS.'; }
+ }
 }
 function step(d){ const L=view.length?view:ALL; let i=L.indexOf(cur); i=(i<0?0:(i+d+L.length)%L.length); play(L[i]); }
 function setCat(c){ cat=c; kidx=0; renderChips(); filter(); listEl.scrollTop=0; }
