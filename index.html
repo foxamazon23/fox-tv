@@ -317,8 +317,6 @@ const CHANNELS=[
 {"n":"Formula 1 AntenaPlay","c":"Sport","u":"https://live4dai.antenaplay.ro/live2_sdi09/live2_sdi09_600k.m3u8","q":"576p"},
 {"n":"Asia Express NonStop","c":"Sport","u":"https://live4dai.antenaplay.ro/live2_sport05/live2_sport05_600k.m3u8","q":"576i","tv":1},
 {"n":"Red Bull TV","c":"Sport","u":"https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8","q":"1080p","l":"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Red_Bull_TV_logo.svg/320px-Red_Bull_TV_logo.svg.png"},
-{"n":"Kiss TV","c":"Muzică","u":"https://tv.broadcasting.ro/kisstv/a629c031-2170-4ee9-a36d-87a891aa3131.m3u8","q":"1080p"},
-{"n":"Magic TV","c":"Muzică","u":"https://tv.broadcasting.ro/magictv/925f90db-5c88-4190-a53d-5163cdffe6f4.m3u8","q":"720p"},
 {"n":"Rock TV","c":"Muzică","u":"https://tv.broadcasting.ro/rocktv/85c83a80-4f71-4f2d-a8d6-43f676896bcb.m3u8","q":"720p","tv":1},
 {"n":"Atomic TV","c":"Muzică","u":"https://atomic.streamnet.ro/atomictv.m3u8","q":"360p"},
 {"n":"Atomic Academy TV","c":"Muzică","u":"https://atomic.streamnet.ro/academia.m3u8","q":"480p"},
@@ -344,16 +342,46 @@ const CHANNELS=[
 {"n":"RT News","c":"Internațional","u":"https://rt-glb.rtvideo.ru/hls/rt_en.m3u8","q":"1080p","tv":1},
 {"n":"NHK World Japan","c":"Internațional","u":"https://nhkwlive-ojp.akamaized.net/hls/live/2003459/nhkwlive-ojp-en/index.m3u8","q":"1080p","tv":1},
 {"n":"CGTN","c":"Internațional","u":"https://news.cgtn.com/resource/live/english/cgtn-news.m3u8","q":"1080p","tv":1},
-{"n":"TRT World","c":"Internațional","u":"https://tv-trtworld.live.trt.com.tr/master.m3u8","q":"1080p","tv":1}
+{"n":"TRT World","c":"Internațional","u":"https://tv-trtworld.live.trt.com.tr/master.m3u8","q":"1080p","tv":1},
+{"n":"Agro TV","c":"Generale","u":"https://agrotv.streamnet.ro/mobile_tv/agrotv.m3u8","q":"360p","l":"https://i.imgur.com/S7X1PiC.png"},
+{"n":"Alfa Omega TV","c":"Religie","u":"https://aom-live.maghost.ro/aomTV/streams/OOztu5o9Fx6dh9mD1711027803849.m3u8","q":"1080p","l":"https://static.wikia.nocookie.net/logopedia/images/e/e3/Aotv_logo_svg.svg/revision/latest/scale-to-width-down/512"},
+{"n":"Angelus TV","c":"Religie","u":"https://video.angelustv.ro/hls/angelustv.m3u8","q":"1080p","l":"https://static.wikia.nocookie.net/logopedia/images/1/12/Angelus_TV.svg/revision/latest/scale-to-width-down/512"},
+{"n":"Antena Monden","c":"Divertisment","u":"https://stream1.antenaplay.ro/live/AntenaMonden/playlist.m3u8","q":"720p","l":"https://static.wikia.nocookie.net/logopedia/images/0/01/Antena_Monden_2022.png/revision/latest/scale-to-width-down/300"},
+{"n":"Credo TV","c":"Religie","u":"https://651c69fa2ff4e.streamlock.net/ctv/_definst_/livecredo/playlist.m3u8","q":"SD","l":"https://i.imgur.com/RD4TgcM.png"},
+{"n":"EMI TV","c":"Muzică","u":"https://astra.emitv.ro/hls/emi/index.m3u8","q":"SD","l":"https://i.imgur.com/B5zssCz.png"},
+{"n":"Mireasa","c":"Divertisment","u":"https://stream1.antenaplay.ro/live/MireasaExtra/playlist.m3u8","q":"720p","l":"https://i.imgur.com/k0VO0LH.png"},
+{"n":"MISA TV","c":"Religie","u":"https://vidl.misatv.ro:5050/MSTV/romanian_720p_baseline/playlist.m3u8","q":"SD","l":"https://i.imgur.com/2RxQNm6.png"},
+{"n":"TVR 1","c":"Generale","u":"https://tvr-1.lg.mncdn.com/tvr1/smil:tvr1.smil/playlist.m3u8","q":"SD","l":"https://i.imgur.com/CcUX1gB.png"},
+{"n":"TVR 2","c":"Generale","u":"https://tvr-2.lg.mncdn.com/tvr2/smil:tvr2.smil/playlist.m3u8","q":"SD","l":"https://i.imgur.com/mKouHIZ.png"},
+{"n":"TVR 3","c":"Generale","u":"https://tvr-3.lg.mncdn.com/tvr3/smil:tvr3.smil/playlist.m3u8","q":"SD","l":"https://i.imgur.com/yHCuTap.png"},
+{"n":"TVR Cluj","c":"Generale","u":"https://tvr-cluj.lg.mncdn.com/tvrcluj/smil:tvrcluj.smil/playlist.m3u8","q":"SD","l":"https://i.imgur.com/RkDra93.png"},
+{"n":"TVR Craiova","c":"Generale","u":"https://tvr-craiova.lg.mncdn.com/tvrcraiova/smil:tvrcraiova.smil/playlist.m3u8","q":"SD","l":"https://i.imgur.com/vxWbQiy.png"},
+{"n":"TVR Cultural","c":"Generale","u":"https://tvr-cultural.lg.mncdn.com/tvrcultural/smil:tvrcultural.smil/playlist.m3u8","q":"SD","l":"https://i.imgur.com/U9i70C9.png"},
+{"n":"TVR Folclor","c":"Muzică","u":"https://tvr-folclor.lg.mncdn.com/tvrfolclor/smil:tvrfolclor.smil/playlist.m3u8","q":"SD","l":"https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/TVR_Folclor_Logo_2023.svg/960px-TVR_Folclor_Logo_2023.svg.png"},
+{"n":"TVR Iași","c":"Generale","u":"https://tvr-iasi.lg.mncdn.com/tvriasi/smil:tvriasi.smil/playlist.m3u8","q":"SD","l":"https://i.imgur.com/Kxkihds.png"},
+{"n":"TVR Info","c":"Știri","u":"https://tvr-info.lg.mncdn.com/tvrinfo/smil:tvrinfo.smil/playlist.m3u8","q":"SD","l":"https://i.imgur.com/7oE7ThR.png"},
+{"n":"TVR Internațional","c":"Generale","u":"https://tvr-international.lg.mncdn.com/tvrinternational/smil:tvrinternational.smil/playlist.m3u8","q":"SD","l":"https://i.imgur.com/w28wcHs.png"},
+{"n":"TVR Târgu Mureș","c":"Generale","u":"https://tvr-tgmures.lg.mncdn.com/tvrtgmures/smil:tvrtgmures.smil/playlist.m3u8","q":"SD","l":"https://i.imgur.com/9Hptdqj.png"},
+{"n":"TVR Timișoara","c":"Generale","u":"https://tvr-timisoara.lg.mncdn.com/tvrtimisoara/smil:tvrtimisoara.smil/playlist.m3u8","q":"SD","l":"https://i.imgur.com/0x6Edei.png"},
+{"n":"Radio România Antena Satelor","c":"Radio","u":"https://stream3.srr.ro/live/AntenaSatelor/playlist.m3u8","q":"720p","l":"https://www.antenasatelor.ro/templates/default/images/custom/logo-main.svg"},
+{"n":"Radio România 3Net","c":"Radio","u":"https://media.3netmedia.ro/hls/stream.m3u8","q":"480p","l":"https://www.radio3net.ro/img/logos/logo_3.png"},
+{"n":"Etno TV","c":"Muzică","u":"https://hls02ns.antenaplay.ro/hls/etno-tv-sd/index.m3u8","q":"SD","l":"https://i.imgur.com/jzhZ8kl.png"},
+{"n":"Inedit TV","c":"Generale","u":"https://hls02ns.antenaplay.ro/hls/inedit-tv-hd/index.m3u8","q":"SD","l":"https://i.imgur.com/HcFpNwA.png"},
+{"n":"Radio România Târgu Mureș","c":"Radio","u":"https://stream3.srr.ro/live/radio-muresr/chunklist_w1731505049.m3u8","q":"576p","l":"https://myradioonline.ro/public/uploads/radio_img/radio-romania-targu-mures/fb_cover.jpg"},
+{"n":"Radio România Oltenia-Craiova","c":"Radio","u":"https://stream3.srr.ro/live/Radio-Oltenia/chunklist_w1200239883.m3u8","q":"576p","l":"https://www.rador.ro/wp-content/uploads/2017/06/logo-radio-oltenia-craiova.png"},
+{"n":"Taraf TV","c":"Muzică","u":"https://hls02ns.antenaplay.ro/hls/taraf-tv-sd/index.m3u8","q":"576p","l":"https://i.imgur.com/0iuwjbK.png"},
+{"n":"Favorit TV","c":"Generale","u":"https://hls02ns.antenaplay.ro/hls/favorit-sd/index.m3u8","q":"576p","l":"https://i.imgur.com/sTy4FHs.png"},
+{"n":"Insula Non Stop","c":"Divertisment","u":"https://live4dai.antenaplay.ro/live2_sdi05/live2_sdi05_600k.m3u8","q":"SD","l":"https://assets.antenaplay.ro/2026/08/20/DlZIyQ0kSAH3YYj30Ovi.png","tv":1}
 ];
 
-const VER='v6';
+const VER='v7';
 const IS_TV_APP = typeof tizen !== 'undefined';
 const IS_TV = IS_TV_APP || /Tizen|SMART-TV|SmartTV|Web0S|NetCast|HbbTV/i.test(navigator.userAgent);
 const NATIVE_HLS = !!document.createElement('video').canPlayType('application/vnd.apple.mpegurl');
 // http:// streams only work inside the installed TV app; https streams without CORS work wherever the native player is used
 const ALL = CHANNELS.filter(c => !c.tv || (c.u.startsWith('http:') ? IS_TV_APP : (IS_TV && NATIVE_HLS)));
-const CATS = ['Toate','★ Favorite','Recente',...[...new Set(ALL.map(c=>c.c))]];
+const CAT_ORDER=['Știri','Generale','Divertisment','Filme','Sport','Muzică','Religie','Radio','Internațional'];
+const CATS = ['Toate','★ Favorite','Recente',...CAT_ORDER.filter(c=>ALL.some(x=>x.c===c)),...[...new Set(ALL.map(c=>c.c))].filter(c=>!CAT_ORDER.includes(c))];
 const $ = id => document.getElementById(id);
 const v=$('v'), listEl=$('list');
 let cat='Toate', query='', view=[], cur=null, hls=null, tries=0, kidx=0, osdT=null;
@@ -381,6 +409,7 @@ function filter(){
  let b = cat==='Toate'?ALL : cat==='★ Favorite'?ALL.filter(c=>favs.includes(c.n)) : cat==='Recente'?recent.map(n=>ALL.find(c=>c.n===n)).filter(Boolean) : ALL.filter(c=>c.c===cat);
  const q = query.trim().toLowerCase();
  if(q) b = b.filter(c=>c.n.toLowerCase().includes(q)||c.c.toLowerCase().includes(q));
+ if(cat!=='Recente') b = b.slice().sort((x,y)=>x.n.localeCompare(y.n,'ro',{sensitivity:'base',numeric:true}));
  view = b; kidx = Math.min(kidx, Math.max(0,view.length-1));
  renderList();
 }
