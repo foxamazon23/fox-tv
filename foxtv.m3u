@@ -1,0 +1,205 @@
+#EXTM3U x-tvg-url=""
+#EXTINF:-1 tvg-name="Digi 24" group-title="Știri" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Digi24_logo.svg/320px-Digi24_logo.svg.png",Digi 24
+https://edge-ar.rcs-rds.ro/digi24ar/index.m3u8
+#EXTINF:-1 tvg-name="Digi 24 HD" group-title="Știri",Digi 24 HD
+http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-digi24/live_fullhd?offsetSeconds=0
+#EXTINF:-1 tvg-name="Antena 3 CNN 1080p" group-title="Știri" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Antena_3_CNN_logo.svg/320px-Antena_3_CNN_logo.svg.png",Antena 3 CNN 1080p
+https://live3vox.antenaplay.ro/a3free/a3free.m3u8
+#EXTINF:-1 tvg-name="Antena 3 CNN SD" group-title="Știri",Antena 3 CNN SD
+https://live4dai.antenaplay.ro/live2_aws4_sdi11/live2_aws4_sdi11_600k.m3u8
+#EXTINF:-1 tvg-name="Aleph News" group-title="Știri",Aleph News
+https://stream-aleph.m.ro/Aleph/ngrp:Alephnewsmain.stream_all/playlist.m3u8
+#EXTINF:-1 tvg-name="Aleph Business" group-title="Știri",Aleph Business
+https://streamw.m.ro/Aleph/ngrp:Alephbiz.stream_all/playlist.m3u8
+#EXTINF:-1 tvg-name="Realitatea Plus" group-title="Știri",Realitatea Plus
+https://stream.realitatea.net/realitatea/plus_md/ts:playlist.m3u8
+#EXTINF:-1 tvg-name="Realitatea Sportiva" group-title="Știri",Realitatea Sportiva
+https://stream.realitatea.net/realitatea/sportiva_md/ts:playlist.m3u8
+#EXTINF:-1 tvg-name="Realitatea Star" group-title="Știri",Realitatea Star
+https://stream.realitatea.net/realitatea/star_md/ts:playlist.m3u8
+#EXTINF:-1 tvg-name="Romania TV" group-title="Știri",Romania TV
+https://hls01ns.antenaplay.ro/hls/romania-tv-sd/index.m3u8
+#EXTINF:-1 tvg-name="National 24 Plus" group-title="Știri",National 24 Plus
+https://hls01ns.antenaplay.ro/hls/n24-plus-sd/index.m3u8
+#EXTINF:-1 tvg-name="Pro TV News" group-title="Știri",Pro TV News
+https://cmero-ott-live.ssl.cdn.cra.cz/channels/cme-ro-voyo-news/playlist.m3u8?offsetSeconds=0&url=0
+#EXTINF:-1 tvg-name="Prima News" group-title="Știri",Prima News
+https://hls02ns.antenaplay.ro/hls/prima-news-hd/index.m3u8
+#EXTINF:-1 tvg-name="Euronews Romania" group-title="Știri",Euronews Romania
+https://hls02ns.antenaplay.ro/hls/euronews-ro-sd/index.m3u8
+#EXTINF:-1 tvg-name="Nasul TV" group-title="Știri",Nasul TV
+https://live.nasul.tv/live/stream.m3u8
+#EXTINF:-1 tvg-name="Kapital TV" group-title="Știri",Kapital TV
+https://1a-1791.com/live/qt9k24wa/live-hls/41w5-c26y/chunklist_i1_DVR.m3u8
+#EXTINF:-1 tvg-name="PROFI 24 TV" group-title="Știri",PROFI 24 TV
+https://live.ro24tv.ro/hls/stream.m3u8
+#EXTINF:-1 tvg-name="A7TV" group-title="Știri",A7TV
+https://a7tvlive.ro/A7TV/A7TV/playlist.m3u8
+#EXTINF:-1 tvg-name="Informatia TV" group-title="Știri",Informatia TV
+https://informatia.streamnet.ro/mobile_tv/informatiatv.m3u8
+#EXTINF:-1 tvg-name="Antena 1" group-title="Generale" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Antena_1_logo.svg/320px-Antena_1_logo.svg.png",Antena 1
+https://live4dai.antenaplay.ro/live2_sdi14/live2_sdi14_600k.m3u8
+#EXTINF:-1 tvg-name="Antena Stars" group-title="Generale",Antena Stars
+https://live4dai.antenaplay.ro/live2_sdi07/live2_sdi07_600k.m3u8
+#EXTINF:-1 tvg-name="Antena International" group-title="Generale",Antena International
+https://live4dai.antenaplay.ro/live2_sdi06/live2_sdi06_600k.m3u8
+#EXTINF:-1 tvg-name="Happy Channel" group-title="Generale",Happy Channel
+https://live4dai.antenaplay.ro/live2_aws4_sdi12/live2_aws4_sdi12_600k.m3u8
+#EXTINF:-1 tvg-name="PRO TV HD" group-title="Generale" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Pro_TV_logo.svg/320px-Pro_TV_logo.svg.png",PRO TV HD
+http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-protv/live_fullhd?offsetSeconds=0
+#EXTINF:-1 tvg-name="PRO TV International" group-title="Generale",PRO TV International
+http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-protv-international/live_fullhd?offsetSeconds=0
+#EXTINF:-1 tvg-name="Kanal D" group-title="Generale" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Kanal_D_logo.svg/320px-Kanal_D_logo.svg.png",Kanal D
+https://stream1.kanald.ro/iphone/knd-live.m3u8
+#EXTINF:-1 tvg-name="Kanal D2" group-title="Generale",Kanal D2
+https://stream2.kanald.ro/iphone/knd2-live.m3u8
+#EXTINF:-1 tvg-name="Prima TV HD" group-title="Generale",Prima TV HD
+http://eb4b8dcf.kablakaka.ru/iptv/AE8BY6FHF5ZGAG/6995/index.m3u8
+#EXTINF:-1 tvg-name="National TV" group-title="Generale",National TV
+https://hls01ns.antenaplay.ro/hls/national-tv-sd/index.m3u8
+#EXTINF:-1 tvg-name="B1 TV" group-title="Generale",B1 TV
+https://hls02ns.antenaplay.ro/hls/b1-tv-hd/index.m3u8
+#EXTINF:-1 tvg-name="Acasa HD" group-title="Generale",Acasa HD
+http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-pro2/live_fullhd?offsetSeconds=0
+#EXTINF:-1 tvg-name="Acasa Gold" group-title="Generale",Acasa Gold
+http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-progold/live_fullhd?offsetSeconds=0
+#EXTINF:-1 tvg-name="Boom TV" group-title="Generale",Boom TV
+https://tvboom.ro/live-tv/live.m3u8
+#EXTINF:-1 tvg-name="Super TV" group-title="Generale",Super TV
+https://live.supertv.ro/live/supertv/playlist.m3u8
+#EXTINF:-1 tvg-name="Qub TV" group-title="Generale",Qub TV
+https://live.djemba.ro/memfs/474f9942-f72b-4130-817a-435cd54b2c36.m3u8
+#EXTINF:-1 tvg-name="Dotto TV" group-title="Generale",Dotto TV
+https://live.dottotv.ro/index.m3u8
+#EXTINF:-1 tvg-name="HD365 TV" group-title="Generale",HD365 TV
+https://s2.netstreaming.eu/hd365.m3u8
+#EXTINF:-1 tvg-name="Telestar 1" group-title="Generale",Telestar 1
+https://dvb.tennet.ro/mobile_tv/telestar.m3u8
+#EXTINF:-1 tvg-name="Tele7ABC HD" group-title="Generale",Tele7ABC HD
+https://live.tele7abc.ro/hls/stream/index.m3u8
+#EXTINF:-1 tvg-name="Columna TV" group-title="Generale",Columna TV
+https://cdn.streamnet.pro/columnatv/live/playlist.m3u8
+#EXTINF:-1 tvg-name="Metropola TV" group-title="Generale",Metropola TV
+https://www.livemetropolatv.ro/MetropolaTV/Metro/playlist.m3u8
+#EXTINF:-1 tvg-name="Muscel TV" group-title="Generale",Muscel TV
+https://cdn.streamnet.pro/musceltv/live/playlist.m3u8
+#EXTINF:-1 tvg-name="Intermedia TV" group-title="Generale",Intermedia TV
+https://live.intermediatv.ro/ram/playlist.m3u8
+#EXTINF:-1 tvg-name="Banat TV" group-title="Generale",Banat TV
+https://www.btv.ro/hls/banat-tv.m3u8
+#EXTINF:-1 tvg-name="Bucovina TV" group-title="Generale",Bucovina TV
+https://www.bucovinatv.ro/proxy/video/playlist.m3u8
+#EXTINF:-1 tvg-name="Sangeorz TV" group-title="Generale",Sangeorz TV
+https://live.sangeorztv.ro:8443/live/index.m3u8?cookieCheck=1
+#EXTINF:-1 tvg-name="ROTV Valencia" group-title="Generale",ROTV Valencia
+https://rotv.romediavalencia.com:3839/live/rotvlive.m3u8
+#EXTINF:-1 tvg-name="Arges TV" group-title="Generale",Arges TV
+https://btutzctahuf0wjoq.cdn.streamingserver.io/hls/yjvam8hlp2g3u08z02tv0yz66rq3cy.m3u8
+#EXTINF:-1 tvg-name="Hunedoara 1" group-title="Generale",Hunedoara 1
+https://netstreaming.eu/hd1.m3u8
+#EXTINF:-1 tvg-name="IasiTV Life" group-title="Generale",IasiTV Life
+https://tv.streambox.ro/hls/itv/index.m3u8
+#EXTINF:-1 tvg-name="JOB TV" group-title="Generale",JOB TV
+https://jobtvserver.eu/hls/stream.m3u8
+#EXTINF:-1 tvg-name="TV Plus Suceava" group-title="Generale",TV Plus Suceava
+http://85.186.22.140/testing/pl5/playlist/ram/playlist.m3u8
+#EXTINF:-1 tvg-name="TeleM Botosani" group-title="Generale",TeleM Botosani
+http://89.137.197.15:8080/testing/pl5/playlist/ram/playlist.m3u8
+#EXTINF:-1 tvg-name="Nova TV Brasov" group-title="Generale",Nova TV Brasov
+http://novapress.ro:2022/live/nova/playlist.m3u8
+#EXTINF:-1 tvg-name="TV Buzau" group-title="Generale",TV Buzau
+http://78.96.33.89:8080
+#EXTINF:-1 tvg-name="TVSat" group-title="Generale",TVSat
+http://89.38.8.130:39443
+#EXTINF:-1 tvg-name="TeleMoldova+" group-title="Generale",TeleMoldova+
+https://vdo.ssl-stream.com:3247/stream/play.m3u8
+#EXTINF:-1 tvg-name="TV SUD" group-title="Generale",TV SUD
+https://stream2.live-stream.ro/WebRTCApp/streams/118334672595255049029831.m3u8
+#EXTINF:-1 tvg-name="Traditional TV" group-title="Generale",Traditional TV
+http://83.103.149.75:8085/udp/239.30.0.9:4000
+#EXTINF:-1 tvg-name="Pro Cinema" group-title="Filme",Pro Cinema
+http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-procinema/live_fullhd?offsetSeconds=0
+#EXTINF:-1 tvg-name="Cinemaraton Plus" group-title="Filme",Cinemaraton Plus
+https://hls02ns.antenaplay.ro/hls/cinemaraton-plus-hd/index.m3u8
+#EXTINF:-1 tvg-name="Nostalgia TV" group-title="Filme",Nostalgia TV
+https://hls02ns.antenaplay.ro/hls/nostalgia-hd/index.m3u8
+#EXTINF:-1 tvg-name="Comedy Play" group-title="Filme",Comedy Play
+https://stream1.antenaplay.ro/live/ComedyPlay/chunklist.m3u8
+#EXTINF:-1 tvg-name="CineWow" group-title="Filme",CineWow
+http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-aleph-news/live_hq?offsetSeconds=0
+#EXTINF:-1 tvg-name="Bollywood HD" group-title="Filme",Bollywood HD
+http://103.213.31.109:90/BollywoodHD/playlist.m3u8
+#EXTINF:-1 tvg-name="Bollywood Film" group-title="Filme",Bollywood Film
+https://tvextra-hls.b-cdn.net/bollywoodfilm/bollywoodfilm.m3u8
+#EXTINF:-1 tvg-name="Bollywood Classic RO" group-title="Filme",Bollywood Classic RO
+https://flash1.bogulus1.cfd/boly/usergenr9j8s2t.m3u8
+#EXTINF:-1 tvg-name="Bollywood HD Russia" group-title="Filme",Bollywood HD Russia
+https://xykt-fix.github.io/cinerama_edge01/hls/BOLLYWOOD_RU/Movie009.m3u8
+#EXTINF:-1 tvg-name="Pro Arena HD" group-title="Sport",Pro Arena HD
+http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-prox/live_fullhd?offsetSeconds=0
+#EXTINF:-1 tvg-name="TVR Sport" group-title="Sport",TVR Sport
+https://tvr-sport.lg.mncdn.com/tvrsport/smil:tvrsport.smil/playlist.m3u8
+#EXTINF:-1 tvg-name="Voyo Sport 1" group-title="Sport",Voyo Sport 1
+http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-protv-plus16/live_fullhd?offsetSeconds=0
+#EXTINF:-1 tvg-name="Formula 1 AntenaPlay" group-title="Sport",Formula 1 AntenaPlay
+https://live4dai.antenaplay.ro/live2_sdi09/live2_sdi09_600k.m3u8
+#EXTINF:-1 tvg-name="Asia Express NonStop" group-title="Sport",Asia Express NonStop
+https://live4dai.antenaplay.ro/live2_sport05/live2_sport05_600k.m3u8
+#EXTINF:-1 tvg-name="Red Bull TV" group-title="Sport" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Red_Bull_TV_logo.svg/320px-Red_Bull_TV_logo.svg.png",Red Bull TV
+https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8
+#EXTINF:-1 tvg-name="Kiss TV" group-title="Muzică",Kiss TV
+https://tv.broadcasting.ro/kisstv/a629c031-2170-4ee9-a36d-87a891aa3131.m3u8
+#EXTINF:-1 tvg-name="Magic TV" group-title="Muzică",Magic TV
+https://tv.broadcasting.ro/magictv/925f90db-5c88-4190-a53d-5163cdffe6f4.m3u8
+#EXTINF:-1 tvg-name="Rock TV" group-title="Muzică",Rock TV
+https://tv.broadcasting.ro/rocktv/85c83a80-4f71-4f2d-a8d6-43f676896bcb.m3u8
+#EXTINF:-1 tvg-name="Atomic TV" group-title="Muzică",Atomic TV
+https://atomic.streamnet.ro/atomictv.m3u8
+#EXTINF:-1 tvg-name="Atomic Academy TV" group-title="Muzică",Atomic Academy TV
+https://atomic.streamnet.ro/academia.m3u8
+#EXTINF:-1 tvg-name="Mooz Dance" group-title="Muzică",Mooz Dance
+https://tvextra-hls.b-cdn.net/moozdance/moozdance.m3u8
+#EXTINF:-1 tvg-name="Mooz Hits" group-title="Muzică",Mooz Hits
+https://tvextra-hls.b-cdn.net/moozhits/moozhits.m3u8
+#EXTINF:-1 tvg-name="Mooz Ro!" group-title="Muzică",Mooz Ro!
+https://tvextra-hls.b-cdn.net/moozro/moozro.m3u8
+#EXTINF:-1 tvg-name="Mooz Love" group-title="Muzică",Mooz Love
+https://tvextra-hls.b-cdn.net/moozlove/moozlove.m3u8
+#EXTINF:-1 tvg-name="Mooz Retro" group-title="Muzică",Mooz Retro
+https://tvextra-hls.b-cdn.net/moozretro/moozretro.m3u8
+#EXTINF:-1 tvg-name="Party Mix HD" group-title="Muzică",Party Mix HD
+https://hls02ns.antenaplay.ro/hls/party-mix-hd/index.m3u8
+#EXTINF:-1 tvg-name="Tele7music" group-title="Muzică",Tele7music
+https://live.tele7music.ro/hls/stream/index.m3u8
+#EXTINF:-1 tvg-name="H!t Music Channel" group-title="Muzică",H!t Music Channel
+http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-mooz-dance/live_hq?offsetSeconds=0
+#EXTINF:-1 tvg-name="Music Channel" group-title="Muzică",Music Channel
+http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-ncn/live_hq?offsetSeconds=0
+#EXTINF:-1 tvg-name="Disco Mix" group-title="Muzică",Disco Mix
+http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-disco-mix/live_hq?offsetSeconds=0
+#EXTINF:-1 tvg-name="Radio Fx Net" group-title="Muzică",Radio Fx Net
+https://streamlov.alsolnet.com/radiofxnet/live/playlist.m3u8
+#EXTINF:-1 tvg-name="Impact TV" group-title="Muzică",Impact TV
+https://live.tvimpact.ro:8088/hevc/index.m3u8
+#EXTINF:-1 tvg-name="Impact TV Dance" group-title="Muzică",Impact TV Dance
+https://online.tvimpact.live/hls/dancetv.m3u8
+#EXTINF:-1 tvg-name="Impact TV Manele" group-title="Muzică",Impact TV Manele
+https://online.tvimpact.live/hls/impact_tv.m3u8
+#EXTINF:-1 tvg-name="Impact TV 2" group-title="Muzică",Impact TV 2
+https://online.tvimpact.live/hls/impact_tv2.m3u8
+#EXTINF:-1 tvg-name="TraLaLa TV" group-title="Muzică",TraLaLa TV
+https://hls01ns.antenaplay.ro/hls/tralala-hd/index.m3u8
+#EXTINF:-1 tvg-name="Rapsodia TV" group-title="Muzică",Rapsodia TV
+http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-rapsodia-tv/live_hq?offsetSeconds=0
+#EXTINF:-1 tvg-name="Al Jazeera English" group-title="Internațional" tvg-logo="https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Al_Jazeera_English.svg/320px-Al_Jazeera_English.svg.png",Al Jazeera English
+https://live-hls-web-aje.getaj.net/AJE/index.m3u8
+#EXTINF:-1 tvg-name="DW English" group-title="Internațional",DW English
+https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/index.m3u8
+#EXTINF:-1 tvg-name="RT News" group-title="Internațional",RT News
+https://rt-glb.rtvideo.ru/hls/rt_en.m3u8
+#EXTINF:-1 tvg-name="NHK World Japan" group-title="Internațional",NHK World Japan
+https://nhkwlive-ojp.akamaized.net/hls/live/2003459/nhkwlive-ojp-en/index.m3u8
+#EXTINF:-1 tvg-name="CGTN" group-title="Internațional",CGTN
+https://news.cgtn.com/resource/live/english/cgtn-news.m3u8
+#EXTINF:-1 tvg-name="TRT World" group-title="Internațional",TRT World
+https://tv-trtworld.live.trt.com.tr/master.m3u8
