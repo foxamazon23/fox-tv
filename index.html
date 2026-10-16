@@ -144,9 +144,46 @@ body.tv .count{font-size:14px}
 .toast.show{display:block}
 body.tv .osd{backdrop-filter:none;background:rgba(0,0,0,.85)}
 body.tv .chip.kfocus{outline:3px solid var(--accent);outline-offset:2px}
+/* TV layout: video full-screen, channel panel as overlay that auto-hides */
+body.tv header{display:none}
+body.tv .app{display:block;height:100vh;padding:0}
+body.tv main{display:block;height:100vh}
+body.tv .player{position:fixed;left:0;top:0;right:0;bottom:0;z-index:1}
+body.tv .stage{position:absolute;left:0;top:0;right:0;bottom:0;min-height:0}
+body.tv .ph{margin-left:40vw;color:#ccc}
+body.tv .ph p{font-size:20px;max-width:640px}
+body.tv aside{position:fixed;left:0;top:0;bottom:0;width:40vw;max-width:760px;z-index:4;background:rgba(6,6,6,.88);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:transform .25s ease}
+body.tv .tvtitle{display:flex;align-items:center;gap:14px;padding:18px 22px 6px}
+body.tv .tvtitle svg{width:44px;height:44px}
+body.tv .tvtitle b{font-size:28px;font-weight:800;letter-spacing:2px;color:var(--accent)}
+body.tv .tvtitle small{display:block;font-size:12px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
+body.tv .chips{flex-wrap:wrap;padding:10px 18px;border-bottom:1px solid var(--border)}
+body.tv .count{padding:10px 24px 4px}
+body.tv .list{overflow-y:auto;padding:6px 14px 20px;scrollbar-width:none}
+body.tv .list::-webkit-scrollbar{display:none}
+body.tv .row{padding:14px 16px;border-width:2px}
+body.tv .row.kfocus{transform:scale(1.02);box-shadow:0 0 0 2px var(--accent),0 0 22px var(--glow)}
+body.tv .tvhint{padding:14px 22px;border-top:1px solid var(--border);color:var(--muted);font-size:16px;line-height:1.7;background:rgba(0,0,0,.5)}
+body.tv .tvhint b{display:inline-block;min-width:34px;padding:1px 8px;margin-right:4px;border:1px solid var(--border-hi);border-radius:6px;color:var(--text);text-align:center;font-size:15px}
+body.tv .bar{position:absolute;right:28px;bottom:28px;left:auto;top:auto;z-index:3;background:rgba(0,0,0,.78);border:1px solid var(--border);border-radius:16px;padding:12px 14px;gap:12px;transition:opacity .25s}
+body.tv .bar .now,body.tv .bar .dot{display:none}
+body.tv .ib{width:auto;height:56px;padding:0 18px;font-size:19px;font-weight:600;gap:10px;border-radius:12px;color:var(--text);background:rgba(255,255,255,.04)}
+body.tv .ib::after{content:attr(data-l)}
+body.tv .ib svg{width:24px;height:24px}
+body.tv .osd{left:auto;right:28px;top:28px;padding:16px 24px;border-left-width:6px;background:rgba(0,0,0,.85)}
+body.tv .osd b{font-size:30px}
+body.tv .osd div{font-size:18px}
+body.tv .toast{bottom:110px;font-size:20px;padding:14px 24px}
+body.tv .dbg{left:auto;right:28px;bottom:110px;max-width:56vw;font-size:14px}
+body.tv .err h3{font-size:28px}
+body.tv .err p{font-size:18px}
+body.tv .err .btn{font-size:18px;padding:14px 24px}
+body.tv.ui-hidden aside{transform:translateX(-100%)}
+body.tv.ui-hidden .bar{opacity:0;pointer-events:none}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="fg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff8c2a"/><stop offset="1" stop-color="#ff6a00"/></linearGradient></defs></svg>
 <div class="app">
 <header>
  <div class="brand">
@@ -161,7 +198,7 @@ body.tv .chip.kfocus{outline:3px solid var(--accent);outline-offset:2px}
   <div class="stage" id="stage">
    <video id="v" playsinline></video>
    <div class="ph" id="ph">
-    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 8 L20 22 L28 18 Z" fill="url(#fg)"/><path d="M50 8 L44 22 L36 18 Z" fill="url(#fg)"/><path d="M32 14 C20 14 12 22 12 34 C12 44 20 52 32 54 C44 52 52 44 52 34 C52 22 44 14 32 14 Z" fill="url(#fg)"/><path d="M32 30 C26 30 22 36 22 42 C22 48 26 52 32 53 C38 52 42 48 42 42 C42 36 38 30 32 30 Z" fill="#fff"/><ellipse cx="24" cy="32" rx="2.5" ry="3.5"/><ellipse cx="40" cy="32" rx="2.5" ry="3.5"/><path d="M29 40 L35 40 L32 44 Z"/></svg>
+    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 8 L20 22 L28 18 Z" fill="url(#fg2)"/><path d="M50 8 L44 22 L36 18 Z" fill="url(#fg2)"/><path d="M32 14 C20 14 12 22 12 34 C12 44 20 52 32 54 C44 52 52 44 52 34 C52 22 44 14 32 14 Z" fill="url(#fg2)"/><path d="M32 30 C26 30 22 36 22 42 C22 48 26 52 32 53 C38 52 42 48 42 42 C42 36 38 30 32 30 Z" fill="#fff"/><ellipse cx="24" cy="32" rx="2.5" ry="3.5"/><ellipse cx="40" cy="32" rx="2.5" ry="3.5"/><path d="M29 40 L35 40 L32 44 Z"/></svg>
     <h2>Bun venit la <span>FOX TV</span></h2>
     <p id="phText">Alege un canal din listă ca să începi.</p>
     <div id="resume"></div>
@@ -174,16 +211,18 @@ body.tv .chip.kfocus{outline:3px solid var(--accent);outline-offset:2px}
   <div class="bar">
    <span class="dot" id="dot"></span>
    <span class="now" id="now">Niciun canal</span>
-   <button class="ib" id="prev" title="Canalul anterior" aria-label="Canalul anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
-   <button class="ib" id="next" title="Canalul următor" aria-label="Canalul următor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
-   <button class="ib" id="fill" title="Umple ecranul" aria-label="Umple ecranul"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></button>
-   <button class="ib" id="fs" title="Ecran complet" aria-label="Ecran complet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button>
+   <button class="ib" id="prev" data-l="Anterior" title="Canalul anterior" aria-label="Canalul anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+   <button class="ib" id="next" data-l="Următor" title="Canalul următor" aria-label="Canalul următor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+   <button class="ib" id="fill" data-l="Umple" title="Umple ecranul" aria-label="Umple ecranul"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></button>
+   <button class="ib" id="fs" data-l="Ecran complet" title="Ecran complet" aria-label="Ecran complet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button>
   </div>
  </section>
  <aside>
+  <div class="tvtitle" style="display:none" id="tvtitle"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 8 L20 22 L28 18 Z" fill="url(#fg2)"/><path d="M50 8 L44 22 L36 18 Z" fill="url(#fg2)"/><path d="M32 14 C20 14 12 22 12 34 C12 44 20 52 32 54 C44 52 52 44 52 34 C52 22 44 14 32 14 Z" fill="url(#fg2)"/><path d="M32 30 C26 30 22 36 22 42 C22 48 26 52 32 53 C38 52 42 48 42 42 C42 36 38 30 32 30 Z" fill="#fff"/><ellipse cx="24" cy="32" rx="2.5" ry="3.5"/><ellipse cx="40" cy="32" rx="2.5" ry="3.5"/><path d="M29 40 L35 40 L32 44 Z"/></svg><div><b>FOX TV</b><small>by Mihai Vulpe</small></div></div>
   <div class="chips" id="chips"></div>
   <div class="count" id="count"></div>
   <div class="list" id="list" role="listbox" aria-label="Canale"></div>
+  <div class="tvhint" style="display:none" id="tvhint"><b>▲▼</b>canal &nbsp; <b>◀▶</b>categorie &nbsp; <b>OK</b>redă &nbsp; <b>CH</b>+/− &nbsp; <b>1</b>player &nbsp; <b>2</b>calitate &nbsp; <b>0</b>info</div>
  </aside>
 </main>
 </div>
@@ -294,7 +333,7 @@ const CHANNELS=[
 {"n":"TRT World","c":"Internațional","u":"https://tv-trtworld.live.trt.com.tr/master.m3u8","q":"1080p","tv":1}
 ];
 
-const VER='v4';
+const VER='v5';
 const IS_TV_APP = typeof tizen !== 'undefined';
 const IS_TV = IS_TV_APP || /Tizen|SMART-TV|SmartTV|Web0S|NetCast|HbbTV/i.test(navigator.userAgent);
 const NATIVE_HLS = !!document.createElement('video').canPlayType('application/vnd.apple.mpegurl');
@@ -304,7 +343,7 @@ const CATS = ['Toate','★ Favorite','Recente',...[...new Set(ALL.map(c=>c.c))]]
 const $ = id => document.getElementById(id);
 const v=$('v'), listEl=$('list');
 let cat='Toate', query='', view=[], cur=null, hls=null, tries=0, kidx=0, osdT=null;
-let wd=null, autoStage=0, forceMode=null, usedMode='', lastHlsErr='', toastT=null;
+let wd=null, autoStage=0, forceMode=null, usedMode='', lastHlsErr='', toastT=null, uiT=null, pendingUnmute=false;
 const store = {get(k,d){try{const s=localStorage.getItem(k);return s?JSON.parse(s):d}catch(e){return d}}, set(k,x){try{localStorage.setItem(k,JSON.stringify(x))}catch(e){}}};
 let favs = store.get('foxtv_favs2',[]), recent = store.get('foxtv_recent2',[]);
 let mode = store.get('foxtv_mode',null), lowQ = store.get('foxtv_lowq',false);
@@ -338,6 +377,14 @@ function status(cls,t){ $('dot').className='dot '+cls; }
 function osd(c){ $('osdN').textContent=c.n; $('osdM').textContent=`${c.c} · ${c.q}`; $('osd').classList.add('show'); clearTimeout(osdT); osdT=setTimeout(()=>$('osd').classList.remove('show'),3500); }
 function stop(){ if(hls){hls.destroy();hls=null;} if(wd){clearInterval(wd);wd=null;} v.onerror=null; v.removeAttribute('src'); v.load(); }
 function toast(t,ms){ $('toast').textContent=t; $('toast').classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>$('toast').classList.remove('show'),ms||4000); }
+function showUi(){
+ const was=document.body.classList.contains('ui-hidden');
+ document.body.classList.remove('ui-hidden'); clearTimeout(uiT);
+ if(IS_TV && cur && !v.paused && !$('err').classList.contains('show')) uiT=setTimeout(()=>document.body.classList.add('ui-hidden'),7000);
+ return was;
+}
+function unmuteIfPending(){ if(pendingUnmute){ pendingUnmute=false; v.muted=false; v.play().catch(()=>{}); toast('Sunet pornit'); } }
+function tryPlay(){ v.play().catch(err=>{ if(err && err.name==='NotAllowedError'){ pendingUnmute=true; v.muted=true; v.play().catch(()=>{}); toast('Browserul a pornit canalul fără sunet — apasă OK sau click pentru sunet',7000); } }); }
 function fitTv(){ if(!IS_TV) return; const st=$('stage'); let W=st.clientWidth, H=st.clientHeight; if(W<200) W=1280; let w=W, h=Math.round(W*9/16); if(H>=200 && h>H){ h=H; w=Math.round(H*16/9); } v.style.width=w+'px'; v.style.height=h+'px'; }
 addEventListener('resize',fitTv);
 function mse(c){ try{ return (window.MediaSource && MediaSource.isTypeSupported(c))?'da':'nu'; }catch(e){ return 'err'; } }
@@ -351,21 +398,29 @@ function updateDbg(){
   'codec h264 base='+mse('video/mp4;codecs="avc1.42E01E"')+' high='+mse('video/mp4;codecs="avc1.64001F"')+' hevc='+mse('video/mp4;codecs="hvc1.1.6.L93.B0"')+' aac='+mse('audio/mp4;codecs="mp4a.40.2"'),
   'player: '+usedMode+'  (setare: '+(mode||'auto')+(lowQ?', calitate mică':'')+')  auto-switch='+autoStage,
   'canal: '+(cur?cur.n:'-')+'  video '+v.videoWidth+'x'+v.videoHeight+'  cutie '+v.clientWidth+'x'+v.clientHeight+'  t='+v.currentTime.toFixed(1)+' paused='+v.paused+' ready='+v.readyState+' net='+v.networkState+' err='+(v.error?v.error.code+' '+(v.error.message||''):'-'),
+  'audio: muted='+v.muted+' vol='+v.volume+' audioBytes='+(typeof v.webkitAudioDecodedByteCount==='number'?v.webkitAudioDecodedByteCount:'n/a')+' videoBytes='+(typeof v.webkitVideoDecodedByteCount==='number'?v.webkitVideoDecodedByteCount:'n/a'),
   'hls: '+lastHlsErr+'\n   '+lv
  ].join('\n');
 }
 setInterval(updateDbg,1000);
-function noPicture(c){
- if(autoStage===0){ autoStage=1; forceMode = usedMode==='nativ'?'hls':'nativ'; toast('Se aude dar nu se vede → încerc alt player ('+forceMode+')…',5000); play(c,true); }
- else if(autoStage===1 && usedMode==='hls' && !lowQ){ autoStage=2; lowQ=true; toast('Tot fără imagine → încerc calitatea cea mai mică…',5000); play(c,true); }
- else { autoStage=3; toast('Televizorul redă doar sunetul la acest canal. Apasă 0 pentru diagnostic.',8000); }
+function noMedia(c,kind){
+ const what = kind==='audio' ? 'Se vede dar nu se aude' : 'Se aude dar nu se vede';
+ const other = usedMode==='nativ'?'hls':'nativ';
+ const canOther = other==='nativ' ? NATIVE_HLS : !!(window.Hls && Hls.isSupported());
+ if(autoStage===0 && canOther){ autoStage=1; forceMode=other; toast(what+' → încerc alt player ('+other+')…',5000); play(c,true); }
+ else if(autoStage<=1 && usedMode==='hls' && !lowQ && kind!=='audio'){ autoStage=2; lowQ=true; toast('Tot fără imagine → încerc calitatea cea mai mică…',5000); play(c,true); }
+ else { autoStage=3; toast(kind==='audio'?'Televizorul nu poate decoda sunetul acestui canal (probabil audio MP3).':'Televizorul redă doar sunetul la acest canal.',8000); }
 }
 function watchdog(c){
- if(wd) clearInterval(wd); let bad=0;
+ if(wd) clearInterval(wd); let bad=0, badA=0;
  wd=setInterval(()=>{ if(cur!==c){clearInterval(wd);wd=null;return;}
   if(!v.paused && v.currentTime>3 && v.readyState>=2){
-   if(v.videoWidth===0){ if(++bad>=3){ clearInterval(wd); wd=null; noPicture(c); } }
-   else { bad=0; if(autoStage>0 && autoStage<3){ store.set('foxtv_mode',usedMode); store.set('foxtv_lowq',lowQ); mode=usedMode; clearInterval(wd); wd=null; } }
+   if(v.videoWidth===0){ if(++bad>=3){ clearInterval(wd); wd=null; noMedia(c,'video'); } return; }
+   bad=0;
+   const ab=v.webkitAudioDecodedByteCount;
+   if(typeof ab==='number' && ab===0 && !v.muted && v.currentTime>5){ if(++badA>=3){ clearInterval(wd); wd=null; noMedia(c,'audio'); } return; }
+   badA=0;
+   if(autoStage>0 && autoStage<3){ store.set('foxtv_mode',usedMode); store.set('foxtv_lowq',lowQ); mode=usedMode; clearInterval(wd); wd=null; }
   } },1500);
 }
 function fail(){
@@ -376,8 +431,8 @@ function fail(){
 function play(c, keepTries){
  if(!c) return;
  if(!keepTries){ tries=0; autoStage=0; forceMode=null; }
- cur=c; stop();
- $('ph').style.display='none'; $('err').classList.remove('show');
+ cur=c; stop(); v.muted=false; pendingUnmute=false;
+ $('ph').style.display='none'; $('err').classList.remove('show'); showUi();
  v.style.display='block'; $('spin').classList.add('show'); status('load');
  $('now').innerHTML=`<span>${esc(c.n)}</span> · ${esc(c.q)}`;
  document.title=`${c.n} · FOX TV`;
@@ -385,7 +440,7 @@ function play(c, keepTries){
  recent=[c.n,...recent.filter(n=>n!==c.n)].slice(0,20); store.set('foxtv_recent2',recent); store.set('foxtv_last2',c.n);
  const vi=view.indexOf(c); if(vi>=0) kidx=vi;
  renderList();
- const ok=()=>{ $('spin').classList.remove('show'); status('live'); tries=0; };
+ const ok=()=>{ $('spin').classList.remove('show'); status('live'); tries=0; showUi(); };
  const hlsOk = !!(window.Hls && Hls.isSupported());
  const want = forceMode || mode;
  let useNative = want==='nativ' ? NATIVE_HLS : want==='hls' ? !hlsOk : (NATIVE_HLS && (IS_TV || !hlsOk));
@@ -396,7 +451,7 @@ function play(c, keepTries){
   v.src=c.u;
   v.addEventListener('playing',ok,{once:true});
   v.onerror=()=>{ if(cur!==c) return; lastHlsErr='nativ err '+(v.error?v.error.code:'?'); if(hlsOk && !c.tv && tries<1){ tries++; stop(); usedMode='hls'; playHls(c,ok); watchdog(c); } else fail(); };
-  v.play().catch(()=>{ v.muted=true; v.play().catch(()=>{}); });
+  tryPlay();
  } else if(window.Hls && Hls.isSupported()){ playHls(c,ok); }
  else { fail(); $('errP').textContent='Dispozitivul nu suportă redarea HLS.'; }
 }
@@ -406,7 +461,10 @@ function playHls(c,ok){
   if(lowQ){ cfg.startLevel=0; cfg.autoLevelCapping=0; }
   hls=new Hls(cfg);
   hls.loadSource(c.u); hls.attachMedia(v);
-  hls.on(Hls.Events.MANIFEST_PARSED,()=>{ v.play().catch(()=>{ v.muted=true; v.play().catch(()=>{}); }); });
+  hls.on(Hls.Events.MANIFEST_PARSED,(e,d)=>{
+   const ac=((d&&d.levels)||[]).map(l=>l.audioCodec||'').join(',');
+   if(IS_TV && NATIVE_HLS && !forceMode && /mp4a\.40\.34|mp3|ac-3|ec-3/i.test(ac) && mse('audio/mp4;codecs="mp4a.40.34"')!=='da'){ forceMode='nativ'; autoStage=1; toast('Audio '+ac+' → player nativ',4000); setTimeout(()=>{ if(cur===c) play(c,true); },0); return; }
+   tryPlay(); });
   hls.on(Hls.Events.FRAG_BUFFERED,ok);
   hls.on(Hls.Events.ERROR,(e,d)=>{ lastHlsErr=(d.fatal?'FATAL ':'')+d.type+'/'+d.details; if(!d.fatal||cur!==c) return;
    if(d.type===Hls.ErrorTypes.MEDIA_ERROR && tries<1){ tries++; hls.recoverMediaError(); return; }
@@ -438,14 +496,18 @@ v.addEventListener('volumechange',()=>{});
 // keyboard (PC) + Samsung remote
 document.addEventListener('keydown',e=>{
  const k=e.keyCode, typing=document.activeElement===$('q');
+ unmuteIfPending();
+ const wasHidden = IS_TV ? showUi() : false;
  if(k===427||k===33){ e.preventDefault(); step(-1); return; }      // CH- / PageUp
  if(k===428||k===34){ e.preventDefault(); step(1); return; }       // CH+ / PageDown
  if(!typing && (k===48||k===96)){ e.preventDefault(); $('dbg').classList.toggle('show'); updateDbg(); return; }           // 0 = diagnostic
  if(!typing && (k===49||k===97)){ e.preventDefault(); mode = mode===null?'nativ':mode==='nativ'?'hls':null; store.set('foxtv_mode',mode); toast('Player: '+(mode||'auto')); if(cur) play(cur); return; }  // 1 = player
  if(!typing && (k===50||k===98)){ e.preventDefault(); lowQ=!lowQ; store.set('foxtv_lowq',lowQ); toast('Calitate mică: '+(lowQ?'DA':'NU')); if(cur) play(cur); return; }   // 2 = calitate
  if(!IS_TV) return;
+ if(wasHidden && (k===38||k===40||k===13||k===37||k===39)){ e.preventDefault(); return; }
+ if($('err').classList.contains('show') && k===13){ e.preventDefault(); play(cur); return; }
  if(typing){ if(k===13||k===40){ e.preventDefault(); $('q').blur(); } return; }
- if(k===38){ e.preventDefault(); if(kidx>0){kidx--; renderList();} else { $('q').focus(); } }
+ if(k===38){ e.preventDefault(); if(kidx>0){kidx--; renderList();} }
  else if(k===40){ e.preventDefault(); if(kidx<view.length-1){kidx++; renderList();} }
  else if(k===37||k===39){ e.preventDefault(); const i=CATS.indexOf(cat); setCat(CATS[(i+(k===39?1:-1)+CATS.length)%CATS.length]); }
  else if(k===13){ e.preventDefault(); play(view[kidx]); }
@@ -454,7 +516,9 @@ document.addEventListener('keydown',e=>{
 if(IS_TV){
  document.body.classList.add('tv');
  try{ ['ChannelUp','ChannelDown'].forEach(n=>tizen.tvinputdevice.registerKey(n)); }catch(e){}
- $('phText').textContent='▲▼ alege canal · ◀▶ categorie · OK pornește · CH+/CH− schimbă canalul · 0 diagnostic · 1 player · 2 calitate';
+ $('phText').textContent='Alege un canal din panoul din stânga. Panoul se ascunde singur când rulează un canal; apasă orice tastă ca să revină.';
+ $('tvtitle').style.display='flex'; $('tvhint').style.display='block';
+ document.addEventListener('mousemove',()=>showUi()); document.addEventListener('click',()=>{ unmuteIfPending(); showUi(); });
  fitTv();
 } else {
  v.controls=true;
